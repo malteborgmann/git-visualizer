@@ -2,7 +2,7 @@ import subprocess
 from datetime import datetime, timezone
 from typing import List, Dict
 
-from core.models import Commit, Branch, Repository # Ensure models.py is in the same directory
+from core.models import Commit, Branch, Repository, ChangedFile # Ensure models.py is in the same directory
 
 def _run_git_command(command: List[str], repo_path: str) -> str:
     """Executes a Git command in the specified repository path and returns its output."""
@@ -72,13 +72,11 @@ def parse_commits(repo_path: str) -> Dict[str, Commit]:
 
         parts = raw_commit_entry.strip().split(field_separator)
         if len(parts) != 6: # Expects 6 parts based on log_format
-            # print(f"Skipping malformed commit entry: {'|'.join(parts)}") # For debugging
             continue
 
         commit_hash, author_name, author_email, committer_timestamp_str, message, parent_hashes_str = parts
 
         # Get numstat for this specific commit
-        # `git log -1 --numstat --pretty=format: <hash>` outputs only the numstat lines
         numstat_output = _run_git_command(
             ["log", "-1", commit_hash, "--numstat", "--pretty=format:"],
             repo_path
@@ -86,6 +84,7 @@ def parse_commits(repo_path: str) -> Dict[str, Commit]:
 
         lines_added = 0
         lines_deleted = 0
+        changed_files = []
         
         numstat_lines = numstat_output.splitlines()
         for line in numstat_lines:
@@ -95,19 +94,27 @@ def parse_commits(repo_path: str) -> Dict[str, Commit]:
             
             stat_parts = line.split('\t')
             if len(stat_parts) == 3:
-                added_str, deleted_str, _ = stat_parts
-                if added_str != '-': # Binary files are marked with '-'
-                    lines_added += int(added_str)
-                if deleted_str != '-':
-                    lines_deleted += int(deleted_str)
+                added_str, deleted_str, file_path = stat_parts
+                is_binary = added_str == '-' or deleted_str == '-'
+                
+                file_lines_added = 0 if added_str == '-' else int(added_str)
+                file_lines_deleted = 0 if deleted_str == '-' else int(deleted_str)
+                
+                lines_added += file_lines_added
+                lines_deleted += file_lines_deleted
+                
+                changed_files.append(ChangedFile(
+                    path=file_path,
+                    lines_added=file_lines_added,
+                    lines_deleted=file_lines_deleted,
+                    is_binary=is_binary
+                ))
         
         try:
             committer_timestamp = int(committer_timestamp_str)
             commit_date = datetime.fromtimestamp(committer_timestamp, tz=timezone.utc)
         except ValueError:
-            # Fallback or error handling if timestamp is incorrect
-            commit_date = datetime.now(timezone.utc) # Or None, or raise Error
-            # print(f"Warning: Could not parse timestamp for commit {commit_hash}")
+            commit_date = datetime.now(timezone.utc)
 
         parents = parent_hashes_str.split() if parent_hashes_str else []
 
@@ -119,7 +126,8 @@ def parse_commits(repo_path: str) -> Dict[str, Commit]:
             message=message.strip(),
             lines_added=lines_added,
             lines_deleted=lines_deleted,
-            parents=parents
+            parents=parents,
+            changed_files=changed_files
         )
     return commits_data
 

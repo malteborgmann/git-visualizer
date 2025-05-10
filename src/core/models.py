@@ -3,6 +3,13 @@ from datetime import datetime
 from typing import List, Dict
 
 @dataclass
+class ChangedFile:
+    path: str
+    lines_added: int
+    lines_deleted: int
+    is_binary: bool = False
+
+@dataclass
 class Commit:
     hash: str
     author_name: str
@@ -12,6 +19,7 @@ class Commit:
     lines_added: int
     lines_deleted: int
     parents: List[str]
+    changed_files: List[ChangedFile] = field(default_factory=list)
 
 @dataclass
 class Branch:

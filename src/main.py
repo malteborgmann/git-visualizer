@@ -39,7 +39,7 @@ def main():
         print(f"Number Commits: {len(repository_data.commits)}")
         print(f"Number Branches (local and remote): {len(repository_data.branches)}")
 
-        # Done: Details für Commits anzeigen, die nicht in einem Branch sind
+        
         if repository_data.commits:
             print("\nCommit Details (max. 3):")
             for i, (commit_hash, commit) in enumerate(repository_data.commits.items()):
@@ -53,8 +53,19 @@ def main():
                 print(f"    Lines Added: {commit.lines_added}, Lines Deleted: {commit.lines_deleted}")
                 parents_str = ", ".join([p[:7] for p in commit.parents]) if commit.parents else "(Initialer Commit)"
                 print(f"    Parents: {parents_str}")
+                
+                # Zeige geänderte Dateien an
+                if commit.changed_files:
+                    print("    Changed Files:")
+                    for changed_file in commit.changed_files:
+                        file_type = "(binary)" if changed_file.is_binary else ""
+                        print(f"      - {changed_file.path} {file_type}")
+                        if not changed_file.is_binary:
+                            print(f"        +{changed_file.lines_added} -{changed_file.lines_deleted}")
+                else:
+                    print("    Changed Files: (none)")
         
-        # Done: Details für Branches anzeigen, die nicht in einem Branch sind
+
         if repository_data.branches:
             print("\nBranch Details (max. 3):")
             local_branches_shown = 0
