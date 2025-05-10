@@ -1,14 +1,26 @@
+/* styles.tcss */
 Screen {
+    /* 3 Spalten: Branch-Tree, Commit-Tabelle, Detail-Panel */
     layout: grid;
     grid-size: 3;
+    grid-columns: 20% 40% 40%;
+    grid-rows: auto;
 }
 
 #branch_tree {
-    dock: left;
-    width: 20%;
+    /* Tree links */
+    width: 100%;
 }
 
-.box {
+#data_table {
+    /* Tabelle in der Mitte */
+    width: 100%;
+}
+
+#details {
+    /* Detail-Panel rechts */
+    border: solid blue;
+    padding: 1;
+    overflow: auto;
     height: 100%;
-    border: solid green;
 }
