@@ -11,6 +11,7 @@ if current_dir not in sys.path:
 
 from core.git_parser import load_repository_data
 from utils.file_utils import is_valid_git_repo
+from tui.app_tui import GitVisualizerApp
 
 def main():
     parser = argparse.ArgumentParser(description="Git Repository Visualizer and Analyzer")
@@ -37,6 +38,19 @@ def main():
         print(f"\nQueried Repository")
         print(f"Path: {repository_data.path}")
         print(f"Number Branches: {len(repository_data.branches)}")
+
+        for key, branch in repository_data.branches.items():
+            print(f"Branch: {key}")
+            print(f"  Head Commit: {branch.head_commit_hash}")
+            print(f"  Is Remote: {branch.is_remote}")
+            print(f"  Is Default: {branch.is_default}")
+            print(f"  Number of Commits: {len(branch.commits)}")
+            for commit_hash, commit in branch.commits.items():
+                print(f"    Commit: {commit_hash} by {commit.author_name} on {commit.date}")
+
+
+        app = GitVisualizerApp(repository=repository_data)
+        app.run()
 
 
     except ValueError as e:
