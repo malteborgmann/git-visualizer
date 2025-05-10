@@ -1,8 +1,8 @@
 import subprocess
 from datetime import datetime, timezone
-from typing import List, Dict
+from typing import List, Dict, Tuple
 
-from core.models import Commit, Branch, Repository, ChangedFile # Ensure models.py is in the same directory
+from core.models import Commit, Branch, Repository, ChangedFile
 
 def _run_git_command(command: List[str], repo_path: str) -> str:
     """Executes a Git command in the specified repository path and returns its output."""
@@ -21,8 +21,8 @@ def _run_git_command(command: List[str], repo_path: str) -> str:
         error_message = f"Git command failed with error: {e.stderr.strip()}"
         if "not a git repository" in e.stderr.lower() or \
            "fatal: Invalid gitfile format" in e.stderr.lower() or \
-           "detected dubious ownership in repository at" in e.stderr.lower(): # The latter for workarounds in CI systems
-             # Try passing the path directly to git if -C causes issues
+           "detected dubious ownership in repository at" in e.stderr.lower(): 
+            
             try:
                 git_dir_arg = f"--git-dir={repo_path}/.git"
                 work_tree_arg = f"--work-tree={repo_path}"
@@ -47,9 +47,24 @@ def _run_git_command(command: List[str], repo_path: str) -> str:
                 raise ValueError(f"The path '{repo_path}' is not a valid Git repository or cannot be accessed. Error: {error_message}")
         raise RuntimeError(error_message)
 
-def parse_commits(repo_path: str) -> Dict[str, Commit]:
-    """Parses all commits from the repository."""
+def _get_default_branch(repo_path: str) -> str:
+    """Ermittelt den Namen des Default-Branches."""
+    try:
+        # Versuche zuerst den Default-Branch vom Remote zu bekommen
+        default_branch = _run_git_command(["symbolic-ref", "refs/remotes/origin/HEAD"], repo_path)
+        return default_branch.replace("refs/remotes/origin/", "")
+    except (RuntimeError, ValueError):
+        try:
+            # Fallback: Versuche den Default-Branch lokal zu finden
+            default_branch = _run_git_command(["rev-parse", "--abbrev-ref", "HEAD"], repo_path)
+            return default_branch
+        except (RuntimeError, ValueError):
+            return "main"  # Fallback auf "main" wenn nichts anderes gefunden wird
+
+def parse_commits(repo_path: str) -> Tuple[Dict[str, Commit], Dict[str, List[str]]]:
+    """Parses all commits from the repository and returns a tuple of (commits, branch_commits)."""
     commits_data: Dict[str, Commit] = {}
+    branch_commits: Dict[str, List[str]] = {}  # Maps branch names to lists of commit hashes
     commit_separator = "---GIT_COMMIT_SEPARATOR---"
     field_separator = "<FIELD_SEP>"
     
@@ -62,7 +77,7 @@ def parse_commits(repo_path: str) -> Dict[str, Commit]:
     )
 
     if not raw_log_output:
-        return {}
+        return {}, {}
 
     raw_commits = raw_log_output.split(commit_separator)
 
@@ -129,11 +144,26 @@ def parse_commits(repo_path: str) -> Dict[str, Commit]:
             parents=parents,
             changed_files=changed_files
         )
-    return commits_data
 
-def parse_branches(repo_path: str) -> Dict[str, Branch]:
-    """Parses all local and remote branches."""
+    
+    for branch_name in _run_git_command(["branch", "--all", "--format=%(refname:short)"], repo_path).splitlines():
+        if "HEAD ->" in branch_name:
+            continue
+        branch_name = branch_name.strip()
+        if not branch_name:
+            continue
+
+        branch_commits[branch_name] = _run_git_command(
+            ["rev-list", branch_name],
+            repo_path
+        ).splitlines()
+
+    return commits_data, branch_commits
+
+def parse_branches(repo_path: str, commits_data: Dict[str, Commit], branch_commits: Dict[str, List[str]]) -> Dict[str, Branch]:
+    """Parses all local and remote branches and assigns commits to them."""
     branches_data: Dict[str, Branch] = {}
+    default_branch_name = _get_default_branch(repo_path)
     field_separator = "<FIELD_SEP>"
 
     # Local branches
@@ -149,7 +179,19 @@ def parse_branches(repo_path: str) -> Dict[str, Branch]:
                 if not line.strip():
                     continue
                 name, head_hash = line.strip().split(field_separator)
-                branches_data[name] = Branch(name=name, head_commit_hash=head_hash, is_remote=False)
+                is_default = name == default_branch_name
+                branch = Branch(
+                    name=name,
+                    head_commit_hash=head_hash,
+                    is_remote=False,
+                    is_default=is_default
+                )
+                # Füge Commits zum Branch hinzu
+                if name in branch_commits:
+                    for commit_hash in branch_commits[name]:
+                        if commit_hash in commits_data:
+                            branch.commits[commit_hash] = commits_data[commit_hash]
+                branches_data[name] = branch
     except RuntimeError as e:
         print(f"Could not parse local branches: {e}") # Non-critical, maybe no branches
 
@@ -164,7 +206,19 @@ def parse_branches(repo_path: str) -> Dict[str, Branch]:
                 if not line.strip() or "HEAD ->" in line: # Ignore HEAD -> origin/main
                     continue
                 name, head_hash = line.strip().split(field_separator)
-                branches_data[name] = Branch(name=name, head_commit_hash=head_hash, is_remote=True)
+                is_default = name == f"origin/{default_branch_name}"
+                branch = Branch(
+                    name=name,
+                    head_commit_hash=head_hash,
+                    is_remote=True,
+                    is_default=is_default
+                )
+                # Add commits to branch
+                if name in branch_commits:
+                    for commit_hash in branch_commits[name]:
+                        if commit_hash in commits_data:
+                            branch.commits[commit_hash] = commits_data[commit_hash]
+                branches_data[name] = branch
     except RuntimeError as e:
         print(f"Could not parse remote branches: {e}") # Non-critical, maybe no remotes
         
@@ -172,9 +226,7 @@ def parse_branches(repo_path: str) -> Dict[str, Branch]:
 
 def load_repository_data(repo_path: str) -> Repository:
     """Loads all relevant data from the Git repository."""
-    # The validity of the repo is checked by _run_git_command and is_valid_git_repo (in main)
+    commits_data, branch_commits = parse_commits(repo_path)
+    branches = parse_branches(repo_path, commits_data, branch_commits)
     
-    commits = parse_commits(repo_path)
-    branches = parse_branches(repo_path)
-    
-    return Repository(path=repo_path, commits=commits, branches=branches) 
+    return Repository(path=repo_path, branches=branches) 

@@ -11,10 +11,6 @@ def is_valid_git_repo(path: str) -> bool:
              return False
 
     try:
-        # A simple Git command that should succeed in a repository.
-        # Use '-C <path>' to execute the command in the context of the repository path.
-        # 'git rev-parse --is-inside-work-tree' is good because it's silent and fast.
-        # For bare repositories, this would fail, so also need to check --is-bare-repository.
         check_is_work_tree = subprocess.run(
             ["git", "-C", path, "rev-parse", "--is-inside-work-tree"],
             check=False, # Do not throw an error here directly

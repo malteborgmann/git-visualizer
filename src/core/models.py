@@ -26,9 +26,17 @@ class Branch:
     name: str
     head_commit_hash: str
     is_remote: bool
+    is_default: bool = False
+    commits: Dict[str, Commit] = field(default_factory=dict)
 
 @dataclass
 class Repository:
     path: str
-    commits: Dict[str, Commit] = field(default_factory=dict)
-    branches: Dict[str, Branch] = field(default_factory=dict) 
+    branches: Dict[str, Branch] = field(default_factory=dict)
+    
+    def get_default_branch(self) -> Branch:
+        """Gibt den Default-Branch zurück."""
+        for branch in self.branches.values():
+            if branch.is_default:
+                return branch
+        return None 
