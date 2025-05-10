@@ -1,0 +1,18 @@
+{   
+    "feature": {
+        "pattern": "^feature/.*",
+        "description": "Feature branches"
+    },
+    "bugfix": {
+        "pattern": "^bugfix/.*",
+        "description": "Bug fix branches"
+    },
+    "hotfix": {
+        "pattern": "^hotfix/.*",
+        "description": "Hot fix branches"
+    },
+    "release": {
+        "pattern": "^release/.*",
+        "description": "Release branches"
+    }
+}
