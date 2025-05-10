@@ -2,12 +2,14 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import List, Dict
 
+
 @dataclass
 class ChangedFile:
     path: str
     lines_added: int
     lines_deleted: int
     is_binary: bool = False
+
 
 @dataclass
 class Commit:
@@ -21,6 +23,7 @@ class Commit:
     parents: List[str]
     changed_files: List[ChangedFile] = field(default_factory=list)
 
+
 @dataclass
 class Branch:
     name: str
@@ -29,14 +32,15 @@ class Branch:
     is_default: bool = False
     commits: Dict[str, Commit] = field(default_factory=dict)
 
+
 @dataclass
 class Repository:
     path: str
     branches: Dict[str, Branch] = field(default_factory=dict)
-    
+
     def get_default_branch(self) -> Branch:
         """Gibt den Default-Branch zurück."""
         for branch in self.branches.values():
             if branch.is_default:
                 return branch
-        return None 
+        return None
