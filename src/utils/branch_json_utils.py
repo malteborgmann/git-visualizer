@@ -42,7 +42,7 @@ def classify_branch(branch_name: str, config: dict) -> str | None:
         pattern = info["pattern"]
         # re.search sucht das Pattern überall im branch_name
         if re.search(pattern, branch_name):
-            return category
+            return category.capitalize()
     return None
 
 

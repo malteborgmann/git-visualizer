@@ -29,6 +29,8 @@ class GitVisualizerApp(App):
             parent: TreeNode = remotes if branch.is_remote else locals
             category = branch.category  # z.B. "feature", "bugfix" etc.
 
+            branch_name = branch.name.split("/")[-1]
+
             if category is None:
                 parent.add_leaf(branch_name, branch)
                 continue
@@ -38,7 +40,7 @@ class GitVisualizerApp(App):
                 if str(child.label.plain) == str(category):
                     child.add_leaf(branch_name, branch)
                     exists = True
-                    continue
+                    break
             if exists:
                 continue
             category_node = parent.add(str(category))

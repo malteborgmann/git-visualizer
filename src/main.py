@@ -35,26 +35,18 @@ def main():
 
     repo_path = os.path.abspath(args.repo_path)
     branch_config_path = os.path.abspath(args.branches) if args.branches else None
-    branch_config_path = os.path.abspath("./config/example_branches.json")
+    #branch_config_path = os.path.abspath("./config/example_branches.json") # TODO: Remove for later version - Just for testing
     
     print(f"Analyzing: {repo_path}")
 
     if not is_valid_git_repo(repo_path):
-        print(
-            f"Error: The specified path '{repo_path}' is not a valid Git repository or Git is not correctly installed/configured."
-        )
-        print(
-            "Ensure that Git is installed and that you have the necessary permissions for the repository."
-        )
+        print(f"Error: The specified path '{repo_path}' is not a valid Git repository or Git is not correctly installed/configured.")
+        print("Ensure that Git is installed and that you have the necessary permissions for the repository.")
         return
     
     if branch_config_path and not os.path.exists(branch_config_path):
-        print(
-            f"Error: The specified branch config path '{branch_config_path}' does not exist."
-        )
+        print(f"Error: The specified branch config path '{branch_config_path}' does not exist.")
         return
-    print(
-        f"Branch config path: {branch_config_path if branch_config_path else 'None'}")
     
     try:
         repository_data = load_repository_data(repo_path)
