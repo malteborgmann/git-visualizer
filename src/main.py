@@ -13,13 +13,16 @@ from core.git_parser import load_repository_data
 from utils.file_utils import is_valid_git_repo
 from tui.app_tui import GitVisualizerApp
 
+
 def main():
-    parser = argparse.ArgumentParser(description="Git Repository Visualizer and Analyzer")
+    parser = argparse.ArgumentParser(
+        description="Git Repository Visualizer and Analyzer"
+    )
     parser.add_argument(
-        "repo_path", 
-        nargs="?", 
-        default=".", 
-        help="Path to the Git repository (default: current directory)"
+        "repo_path",
+        nargs="?",
+        default=".",
+        help="Path to the Git repository (default: current directory)",
     )
     args = parser.parse_args()
 
@@ -28,13 +31,17 @@ def main():
     print(f"Analyzing: {repo_path}")
 
     if not is_valid_git_repo(repo_path):
-        print(f"Error: The specified path '{repo_path}' is not a valid Git repository or Git is not correctly installed/configured.")
-        print("Ensure that Git is installed and that you have the necessary permissions for the repository.")
+        print(
+            f"Error: The specified path '{repo_path}' is not a valid Git repository or Git is not correctly installed/configured."
+        )
+        print(
+            "Ensure that Git is installed and that you have the necessary permissions for the repository."
+        )
         return
 
     try:
         repository_data = load_repository_data(repo_path)
-        
+
         print(f"\nQueried Repository")
         print(f"Path: {repository_data.path}")
         print(f"Number Branches: {len(repository_data.branches)}")
@@ -46,13 +53,13 @@ def main():
             print(f"  Is Default: {branch.is_default}")
             print(f"  Number of Commits: {len(branch.commits)}")
             for commit_hash, commit in branch.commits.items():
-                print(f"    Commit: {commit_hash} by {commit.author_name} on {commit.date}")
+                print(
+                    f"    Commit: {commit_hash} by {commit.author_name} on {commit.date}"
+                )
             break
-
 
         app = GitVisualizerApp(repository=repository_data)
         app.run()
-
 
     except ValueError as e:
         print(f"ValueError during analyzation: {e}")
@@ -61,5 +68,6 @@ def main():
     except Exception as e:
         print(f"An unexpected Exception occured: {e}")
 
+
 if __name__ == "__main__":
-    main() 
+    main()
