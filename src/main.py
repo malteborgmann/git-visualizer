@@ -47,6 +47,7 @@ def main():
             print(f"  Number of Commits: {len(branch.commits)}")
             for commit_hash, commit in branch.commits.items():
                 print(f"    Commit: {commit_hash} by {commit.author_name} on {commit.date}")
+            break
 
 
         app = GitVisualizerApp(repository=repository_data)

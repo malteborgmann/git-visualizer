@@ -1,0 +1,14 @@
+Screen {
+    layout: grid;
+    grid-size: 3;
+}
+
+#branch_tree {
+    dock: left;
+    width: 20%;
+}
+
+.box {
+    height: 100%;
+    border: solid green;
+}
