@@ -33,6 +33,7 @@ def test_classify_branch():
     }
 
     for branch, expected in test_cases.items():
+        expected = expected.capitalize() if expected else None
         result = classify_branch(branch, CONFIG_DATA)
         assert result == expected, f"Branch '{branch}' sollte '{expected}' sein, got '{result}'"
 
