@@ -1,18 +1,18 @@
-{   
+{
     "feature": {
-        "pattern": "^feature/.*",
-        "description": "Feature branches"
+      "pattern": ".*feature/.*",
+      "description": "Branches for new features and enhancements"
     },
     "bugfix": {
-        "pattern": "^bugfix/.*",
-        "description": "Bug fix branches"
+      "pattern": ".*bugfix/.*",
+      "description": "Branches for non-critical bug fixes"
     },
     "hotfix": {
-        "pattern": "^hotfix/.*",
-        "description": "Hot fix branches"
+      "pattern": ".*hotfix/.*",
+      "description": "Branches for critical production fixes"
     },
     "release": {
-        "pattern": "^release/.*",
-        "description": "Release branches"
+      "pattern": ".*release/.*",
+      "description": "Branches for preparing new releases"
     }
 }

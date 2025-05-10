@@ -30,6 +30,7 @@ class Branch:
     head_commit_hash: str
     is_remote: bool
     is_default: bool = False
+    category: str = None
     commits: Dict[str, Commit] = field(default_factory=dict)
 
 

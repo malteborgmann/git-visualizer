@@ -13,6 +13,7 @@ if current_dir not in sys.path:
 from core.git_parser import load_repository_data
 from utils.file_utils import is_valid_git_repo
 from tui.app_tui import GitVisualizerApp
+from utils.branch_json_utils import classify_branch, load_branch_config
 
 
 def main():
@@ -46,15 +47,23 @@ def main():
         )
         return
     
-    if not os.path.exists(branch_config_path):
+    if branch_config_path and not os.path.exists(branch_config_path):
         print(
             f"Error: The specified branch config path '{branch_config_path}' does not exist."
         )
         return
+    print(
+        f"Branch config path: {branch_config_path if branch_config_path else 'None'}")
     
     try:
         repository_data = load_repository_data(repo_path)
-
+        if branch_config_path:
+            branch_config = load_branch_config(branch_config_path)
+            for branch in repository_data.branches.values():
+                branch.category = classify_branch(branch.name, branch_config)
+                print(
+                    f"Branch {branch.name} classified as {branch.category}"
+                )
         print(f"\nQueried Repository")
         print(f"Path: {repository_data.path}")
         print(f"Number Branches: {len(repository_data.branches)}")

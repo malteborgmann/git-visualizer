@@ -40,7 +40,8 @@ def classify_branch(branch_name: str, config: dict) -> str | None:
     """
     for category, info in config.items():
         pattern = info["pattern"]
-        if re.match(pattern, branch_name):
+        # re.search sucht das Pattern überall im branch_name
+        if re.search(pattern, branch_name):
             return category
     return None
 
@@ -50,7 +51,7 @@ if __name__ == "__main__":
     branch_config = load_branch_config(path)
     print(branch_config["feature"]["pattern"])
 
-    for name in ["feature/123-add-login", "bugfix/42-fix-error", "docs/readme"]:
+    for name in ["feature/123-add-login", "bugfix/42-fix-error", "docs/readme", "origin/feature/123-add-login"]:
         cat = classify_branch(name, branch_config)
         if cat:
             print(f"Branch `{name}` gehört zu `{cat}`.")
