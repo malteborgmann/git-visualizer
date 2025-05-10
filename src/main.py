@@ -4,6 +4,7 @@
 import argparse
 import os
 import sys
+import json
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 if current_dir not in sys.path:
@@ -24,10 +25,16 @@ def main():
         default=".",
         help="Path to the Git repository (default: current directory)",
     )
+    parser.add_argument(
+        "-b", "--branches",
+        default=None,
+        help="Path to the branches file (default: None)",
+    )
     args = parser.parse_args()
 
     repo_path = os.path.abspath(args.repo_path)
-
+    branch_config_path = os.path.abspath(args.branches) if args.branches else None
+    
     print(f"Analyzing: {repo_path}")
 
     if not is_valid_git_repo(repo_path):
@@ -38,7 +45,13 @@ def main():
             "Ensure that Git is installed and that you have the necessary permissions for the repository."
         )
         return
-
+    
+    if not os.path.exists(branch_config_path):
+        print(
+            f"Error: The specified branch config path '{branch_config_path}' does not exist."
+        )
+        return
+    
     try:
         repository_data = load_repository_data(repo_path)
 
@@ -58,8 +71,10 @@ def main():
                 )
             break
 
-        app = GitVisualizerApp(repository=repository_data)
-        app.run()
+        
+
+        #app = GitVisualizerApp(repository=repository_data)
+        #app.run()
 
     except ValueError as e:
         print(f"ValueError during analyzation: {e}")
