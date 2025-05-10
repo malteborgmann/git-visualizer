@@ -38,50 +38,6 @@ def main():
         print(f"Path: {repository_data.path}")
         print(f"Number Branches: {len(repository_data.branches)}")
 
-        # Zeige Branch-Details
-        if repository_data.branches:
-            print("\nBranch Details (max. 3 pro Typ):")
-            max_each_type = 3
-
-            print("  Local Branches:")
-            count = 0
-            for branch_name, branch in repository_data.branches.items():
-                if not branch.is_remote and count < max_each_type:
-                    default_marker = " (default)" if branch.is_default else ""
-                    print(f"    - {branch_name}{default_marker}")
-                    print(f"      HEAD: {branch.head_commit_hash[:7]}")
-                    print(f"      Commits: {len(branch.commits)}")
-                    
-                    # Zeige die letzten 2 Commits dieses Branches
-                    if branch.commits:
-                        print("      Recent Commits:")
-                        for i, (commit_hash, commit) in enumerate(branch.commits.items()):
-                            if i >= 2:  # Nur die letzten 2 Commits zeigen
-                                break
-                            print(f"        - {commit_hash[:7]}: {commit.message.splitlines()[0]} : Added: {commit.lines_added} - Deleted: {commit.lines_deleted}")
-                    count += 1
-            if count == 0:
-                print("      No local branches found or displayed.")
-            
-            print("\n  Remote Branches:")
-            count = 0
-            for branch_name, branch in repository_data.branches.items():
-                if branch.is_remote and count < max_each_type:
-                    default_marker = " (default)" if branch.is_default else ""
-                    print(f"    - {branch_name}{default_marker}")
-                    print(f"      HEAD: {branch.head_commit_hash[:7]}")
-                    print(f"      Commits: {len(branch.commits)}")
-                    
-                    # Zeige die letzten 2 Commits dieses Branches
-                    if branch.commits:
-                        print("      Recent Commits:")
-                        for i, (commit_hash, commit) in enumerate(branch.commits.items()):
-                            if i >= 2:  # Nur die letzten 2 Commits zeigen
-                                break
-                            print(f"        - {commit_hash[:7]}: {commit.message.splitlines()[0]}")
-                    count += 1
-            if count == 0:
-                print("      No remote branches found or displayed.")
 
     except ValueError as e:
         print(f"ValueError during analyzation: {e}")
