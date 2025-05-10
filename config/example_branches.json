@@ -1,0 +1,18 @@
+{
+    "feature": {
+      "pattern": ".*feature/.*",
+      "description": "Branches for new features and enhancements"
+    },
+    "bugfix": {
+      "pattern": ".*bugfix/.*",
+      "description": "Branches for non-critical bug fixes"
+    },
+    "hotfix": {
+      "pattern": ".*hotfix/.*",
+      "description": "Branches for critical production fixes"
+    },
+    "release": {
+      "pattern": ".*release/.*",
+      "description": "Branches for preparing new releases"
+    }
+}
