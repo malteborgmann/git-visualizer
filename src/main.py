@@ -4,6 +4,7 @@
 import argparse
 import os
 import sys
+import json
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 if current_dir not in sys.path:
@@ -12,6 +13,7 @@ if current_dir not in sys.path:
 from core.git_parser import load_repository_data
 from utils.file_utils import is_valid_git_repo
 from tui.app_tui import GitVisualizerApp
+from utils.branch_json_utils import classify_branch, load_branch_config
 
 
 def main():
@@ -24,23 +26,34 @@ def main():
         default=".",
         help="Path to the Git repository (default: current directory)",
     )
+    parser.add_argument(
+        "-b", "--branches",
+        default=None,
+        help="Path to the branches file (default: None)",
+    )
     args = parser.parse_args()
 
     repo_path = os.path.abspath(args.repo_path)
-
+    branch_config_path = os.path.abspath(args.branches) if args.branches else None
+    #branch_config_path = os.path.abspath("./config/example_branches.json") # TODO: Remove for later version - Just for testing
+    
     print(f"Analyzing: {repo_path}")
 
     if not is_valid_git_repo(repo_path):
-        print(
-            f"Error: The specified path '{repo_path}' is not a valid Git repository or Git is not correctly installed/configured."
-        )
-        print(
-            "Ensure that Git is installed and that you have the necessary permissions for the repository."
-        )
+        print(f"Error: The specified path '{repo_path}' is not a valid Git repository or Git is not correctly installed/configured.")
+        print("Ensure that Git is installed and that you have the necessary permissions for the repository.")
         return
-
+    
+    if branch_config_path and not os.path.exists(branch_config_path):
+        print(f"Error: The specified branch config path '{branch_config_path}' does not exist.")
+        return
+    
     try:
         repository_data = load_repository_data(repo_path)
+        if branch_config_path:
+            branch_config = load_branch_config(branch_config_path)
+            for branch in repository_data.branches.values():
+                branch.category = classify_branch(branch.name, branch_config)
 
         print(f"\nQueried Repository")
         print(f"Path: {repository_data.path}")

@@ -17,6 +17,7 @@ class GitVisualizerApp(App):
     def compose(self) -> ComposeResult:
         tree = Tree("Branches", id="branch_tree")
         tree.root.expand()
+
         locals = tree.root.add("Local")
         remotes = tree.root.add("Remote")
 
@@ -24,10 +25,27 @@ class GitVisualizerApp(App):
         remotes.expand()
 
         for branch_name, branch in self.repository.branches.items():
-            if branch.is_remote:
-                remotes.add_leaf(branch_name, branch)
-            else:
-                locals.add_leaf(branch_name, branch)
+            # Wähle den richtigen Eltern-Knoten
+            parent: TreeNode = remotes if branch.is_remote else locals
+            category = branch.category  # z.B. "feature", "bugfix" etc.
+
+            branch_name = branch.name.split("/")[-1]
+
+            if category is None:
+                parent.add_leaf(branch_name, branch)
+                continue
+            
+            exists = False
+            for child in parent.children:
+                if str(child.label.plain) == str(category):
+                    child.add_leaf(branch_name, branch)
+                    exists = True
+                    break
+            if exists:
+                continue
+            category_node = parent.add(str(category))
+            category_node.expand()
+            category_node.add_leaf(branch_name, branch)
 
         yield tree
 
@@ -101,3 +119,6 @@ class GitVisualizerApp(App):
             f"[b]Changed files:[/b]\n"
             + ("\n".join(f"- {f.path}" for f in changed) or "–")
         )
+
+def node_exists_by_label(parent: TreeNode, label: str) -> bool:
+    return any(child.label == label for child in parent.children)
