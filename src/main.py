@@ -35,6 +35,7 @@ def main():
 
     repo_path = os.path.abspath(args.repo_path)
     branch_config_path = os.path.abspath(args.branches) if args.branches else None
+    branch_config_path = os.path.abspath("./config/example_branches.json")
     
     print(f"Analyzing: {repo_path}")
 
@@ -61,9 +62,7 @@ def main():
             branch_config = load_branch_config(branch_config_path)
             for branch in repository_data.branches.values():
                 branch.category = classify_branch(branch.name, branch_config)
-                print(
-                    f"Branch {branch.name} classified as {branch.category}"
-                )
+
         print(f"\nQueried Repository")
         print(f"Path: {repository_data.path}")
         print(f"Number Branches: {len(repository_data.branches)}")
@@ -80,10 +79,8 @@ def main():
                 )
             break
 
-        
-
-        #app = GitVisualizerApp(repository=repository_data)
-        #app.run()
+        app = GitVisualizerApp(repository=repository_data)
+        app.run()
 
     except ValueError as e:
         print(f"ValueError during analyzation: {e}")
