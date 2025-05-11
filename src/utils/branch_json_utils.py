@@ -51,7 +51,12 @@ if __name__ == "__main__":
     branch_config = load_branch_config(path)
     print(branch_config["feature"]["pattern"])
 
-    for name in ["feature/123-add-login", "bugfix/42-fix-error", "docs/readme", "origin/feature/123-add-login"]:
+    for name in [
+        "feature/123-add-login",
+        "bugfix/42-fix-error",
+        "docs/readme",
+        "origin/feature/123-add-login",
+    ]:
         cat = classify_branch(name, branch_config)
         if cat:
             print(f"Branch `{name}` gehört zu `{cat}`.")

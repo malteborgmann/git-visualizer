@@ -28,13 +28,15 @@ def main():
         help="Path to the Git repository (default: current directory)",
     )
     parser.add_argument(
-        "-b", "--branches",
+        "-b",
+        "--branches",
         default=None,
         help="Path to the branches file (default: None)",
     )
 
     parser.add_argument(
-        "-n", "--names",
+        "-n",
+        "--names",
         default=None,
         help="Path to the names file (default: None)",
     )
@@ -44,23 +46,31 @@ def main():
     repo_path = os.path.abspath(args.repo_path)
     branch_config_path = os.path.abspath(args.branches) if args.branches else None
     branch_names_path = os.path.abspath(args.names) if args.names else None
-    #branch_config_path = os.path.abspath("./config/example_branches.json") # TODO: Remove for later version - Just for testing
-    
+    # branch_config_path = os.path.abspath("./config/example_branches.json") # TODO: Remove for later version - Just for testing
+
     print(f"Analyzing: {repo_path}")
 
     if not is_valid_git_repo(repo_path):
-        print(f"Error: The specified path '{repo_path}' is not a valid Git repository or Git is not correctly installed/configured.")
-        print("Ensure that Git is installed and that you have the necessary permissions for the repository.")
+        print(
+            f"Error: The specified path '{repo_path}' is not a valid Git repository or Git is not correctly installed/configured."
+        )
+        print(
+            "Ensure that Git is installed and that you have the necessary permissions for the repository."
+        )
         return
-    
+
     if branch_config_path and not os.path.exists(branch_config_path):
-        print(f"Error: The specified branch config path '{branch_config_path}' does not exist.")
+        print(
+            f"Error: The specified branch config path '{branch_config_path}' does not exist."
+        )
         return
-    
+
     if branch_names_path and not os.path.exists(branch_names_path):
-        print(f"Error: The specified branch names path '{branch_names_path}' does not exist.")
+        print(
+            f"Error: The specified branch names path '{branch_names_path}' does not exist."
+        )
         return
-    
+
     try:
         # Categorize branches based on the branch_config
         repository_data = load_repository_data(repo_path)
@@ -77,9 +87,8 @@ def main():
                     name = get_name_by_mail(commit.author_email, name_config)
                     if name:
                         commit.author_name = name
-                    
 
-        print(f"\nQueried Repository")
+        print("\nQueried Repository")
         print(f"Path: {repository_data.path}")
         print(f"Number Branches: {len(repository_data.branches)}")
 

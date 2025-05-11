@@ -34,7 +34,7 @@ class GitVisualizerApp(App):
             if category is None:
                 parent.add_leaf(branch_name, branch)
                 continue
-            
+
             exists = False
             for child in parent.children:
                 if str(child.label.plain) == str(category):
@@ -119,6 +119,7 @@ class GitVisualizerApp(App):
             f"[b]Changed files:[/b]\n"
             + ("\n".join(f"- {f.path}" for f in changed) or "–")
         )
+
 
 def node_exists_by_label(parent: TreeNode, label: str) -> bool:
     return any(child.label == label for child in parent.children)

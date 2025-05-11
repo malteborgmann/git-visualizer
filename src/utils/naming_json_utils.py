@@ -14,6 +14,7 @@ def load_name_config(path):
         data = json.load(f)
     return data
 
+
 def get_name_by_mail(mail: str, config: dict) -> str:
     """
     Get the name associated with a given email address using the provided configuration.
@@ -28,4 +29,3 @@ def get_name_by_mail(mail: str, config: dict) -> str:
         if mail in emails:
             return name
     return None
-
