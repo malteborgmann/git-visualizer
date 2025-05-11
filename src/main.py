@@ -95,8 +95,8 @@ def main():
                 )
             break
 
-        #app = GitVisualizerApp(repository=repository_data)
-        #app.run()
+        app = GitVisualizerApp(repository=repository_data)
+        app.run()
 
     except ValueError as e:
         print(f"ValueError during analyzation: {e}")
