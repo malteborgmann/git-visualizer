@@ -14,6 +14,7 @@ from core.git_parser import load_repository_data
 from utils.file_utils import is_valid_git_repo
 from tui.app_tui import GitVisualizerApp
 from utils.branch_json_utils import classify_branch, load_branch_config
+from utils.naming_json_utils import load_name_config, get_name_by_mail
 
 
 def main():
@@ -31,10 +32,18 @@ def main():
         default=None,
         help="Path to the branches file (default: None)",
     )
+
+    parser.add_argument(
+        "-n", "--names",
+        default=None,
+        help="Path to the names file (default: None)",
+    )
+
     args = parser.parse_args()
 
     repo_path = os.path.abspath(args.repo_path)
     branch_config_path = os.path.abspath(args.branches) if args.branches else None
+    branch_names_path = os.path.abspath(args.names) if args.names else None
     #branch_config_path = os.path.abspath("./config/example_branches.json") # TODO: Remove for later version - Just for testing
     
     print(f"Analyzing: {repo_path}")
@@ -48,12 +57,27 @@ def main():
         print(f"Error: The specified branch config path '{branch_config_path}' does not exist.")
         return
     
+    if branch_names_path and not os.path.exists(branch_names_path):
+        print(f"Error: The specified branch names path '{branch_names_path}' does not exist.")
+        return
+    
     try:
+        # Categorize branches based on the branch_config
         repository_data = load_repository_data(repo_path)
         if branch_config_path:
             branch_config = load_branch_config(branch_config_path)
             for branch in repository_data.branches.values():
                 branch.category = classify_branch(branch.name, branch_config)
+
+        # Replace names with the ones from the names file
+        if branch_names_path:
+            name_config = load_name_config(branch_names_path)
+            for branch in repository_data.branches.values():
+                for commit in branch.commits.values():
+                    name = get_name_by_mail(commit.author_email, name_config)
+                    if name:
+                        commit.author_name = name
+                    
 
         print(f"\nQueried Repository")
         print(f"Path: {repository_data.path}")
@@ -71,8 +95,8 @@ def main():
                 )
             break
 
-        app = GitVisualizerApp(repository=repository_data)
-        app.run()
+        #app = GitVisualizerApp(repository=repository_data)
+        #app.run()
 
     except ValueError as e:
         print(f"ValueError during analyzation: {e}")
