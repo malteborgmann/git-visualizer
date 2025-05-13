@@ -11,6 +11,8 @@ Screen {
     padding: 1;
 }
 
+
+
 /* Tabelle */
 #data_table {
     height: 100%;
@@ -22,8 +24,13 @@ Screen {
 #details {
     height: 100%;
     border: solid blue;
-    padding: 1;
     overflow: auto;
+}
+
+#plot {
+    height: 50%;
+    dock: bottom;
+    border: solid red;
 }
 
 /* Statistik-Header */

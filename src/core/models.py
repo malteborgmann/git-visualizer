@@ -32,6 +32,7 @@ class Branch:
     is_default: bool = False
     category: str = None
     commits: Dict[str, Commit] = field(default_factory=dict)
+    user_commits: Dict[str, int] = field(default_factory=dict)
 
 
 @dataclass

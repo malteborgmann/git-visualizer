@@ -11,6 +11,7 @@ from src.utils.file_utils import is_valid_git_repo
 from src.tui.app_tui import GitVisualizerApp
 from src.utils.branch_json_utils import classify_branch, load_branch_config
 from src.utils.naming_json_utils import load_name_config, get_name_by_mail
+from src.utils.user_commits import get_commits_per_user
 
 
 def main():
@@ -83,6 +84,14 @@ def main():
                     name = get_name_by_mail(commit.author_email, name_config)
                     if name:
                         commit.author_name = name
+
+        for branch in repository_data.branches.values():
+            branch.user_commits = get_commits_per_user(branch)
+            branch.user_commits = dict(sorted(
+                branch.user_commits.items(), key=lambda x: x[1], reverse=True
+            ))
+            print(f"Branch: {branch.name}, User Commits: {branch.user_commits.keys()}")
+
 
         print("\nQueried Repository")
         print(f"Path: {repository_data.path}")
