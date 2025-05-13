@@ -1,6 +1,8 @@
 from textual.app import App, ComposeResult
 from textual.widgets import Tree, LoadingIndicator, Static, DataTable
-from core.models import Repository, Branch
+from textual.containers import Vertical
+
+from src.core.models import Repository, Branch
 from textual.widgets.tree import TreeNode
 
 
@@ -47,7 +49,22 @@ class GitVisualizerApp(App):
             category_node.expand()
             category_node.add_leaf(branch_name, branch)
 
-        yield tree
+        stats = Vertical(
+            Static(f"📁 Files: {self.repository.total_files}", id="stat_files"),
+            Static(f"📦 Ignored: {self.repository.ignored}", id="stat_ignored"),
+            Static(f"📄 Lines of Code (LOC): {self.repository.loc}", id="stat_lines"),
+            Static(f"🪝 Hooks: {self.repository.hooks if self.repository.hooks else 'None'}", id="stat_hooks")
+            ,id="stats_header")
+
+        branch_column = Vertical(
+            tree,
+            stats,
+            id="left_column"
+        )
+
+        yield branch_column
+
+        #yield tree
 
         yield DataTable(
             name="data_table",
@@ -77,7 +94,7 @@ class GitVisualizerApp(App):
             return
 
         self.current_branch = branch
-        table = self.query_one(DataTable)
+        table = self.query_one("#data_table")
         table.clear()
 
         for hash, commit in branch.commits.items():
@@ -103,7 +120,7 @@ class GitVisualizerApp(App):
         if commit is None:
             return
 
-        details = self.query_one(Static)
+        details = self.query_one("#details")
 
         added = str(commit.lines_added)
         deleted = str(commit.lines_deleted)

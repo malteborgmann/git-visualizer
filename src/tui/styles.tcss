@@ -1,26 +1,36 @@
-/* styles.tcss */
 Screen {
-    /* 3 Spalten: Branch-Tree, Commit-Tabelle, Detail-Panel */
-    layout: grid;
-    grid-size: 3;
-    grid-columns: 20% 40% 40%;
-    grid-rows: auto;
+    layout: horizontal;
 }
 
-#branch_tree {
-    /* Tree links */
-    width: 100%;
+/* Linke Spalte */
+#left_column {
+    width: 20%;
+    height: 100%;
+    layout: vertical;
+    border: solid grey;
+    padding: 1;
 }
 
+/* Tabelle */
 #data_table {
-    /* Tabelle in der Mitte */
-    width: 100%;
+    height: 100%;
+    border: solid green;
+    width: 40%
 }
 
+/* Commit-Details */
 #details {
-    /* Detail-Panel rechts */
+    height: 100%;
     border: solid blue;
     padding: 1;
     overflow: auto;
-    height: 100%;
+}
+
+/* Statistik-Header */
+#stats_header {
+    height: auto;
+    padding-top: 1;
+    border-top: solid grey;
+    color: yellow;
+    content-align: left middle;
 }
