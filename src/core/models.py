@@ -39,13 +39,12 @@ class Branch:
 class Repository:
     path: str
     branches: Dict[str, Branch] = field(default_factory=dict)
-    
+
     loc: int = 0
     ignored: int = 0
     total_files: int = 0
 
     hooks: List[str] = field(default_factory=list)
-
 
     def get_default_branch(self) -> Branch:
         """Gibt den Default-Branch zurück."""

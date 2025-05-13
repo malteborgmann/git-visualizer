@@ -1,6 +1,7 @@
 import subprocess
 from typing import List, Dict, Tuple
 
+
 def run_git_command(command: List[str], repo_path: str) -> str:
     """Executes a Git command in the specified repository path and returns its output."""
     try:

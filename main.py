@@ -87,11 +87,10 @@ def main():
 
         for branch in repository_data.branches.values():
             branch.user_commits = get_commits_per_user(branch)
-            branch.user_commits = dict(sorted(
-                branch.user_commits.items(), key=lambda x: x[1], reverse=True
-            ))
+            branch.user_commits = dict(
+                sorted(branch.user_commits.items(), key=lambda x: x[1], reverse=True)
+            )
             print(f"Branch: {branch.name}, User Commits: {branch.user_commits.keys()}")
-
 
         print("\nQueried Repository")
         print(f"Path: {repository_data.path}")
@@ -121,4 +120,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main() 
+    main()

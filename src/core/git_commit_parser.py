@@ -1,9 +1,9 @@
-
 from datetime import datetime, timezone
 from typing import List, Dict, Tuple
 
 from src.core.models import Commit, ChangedFile
 from src.core.git_command_runner import run_git_command
+
 
 def parse_commits(repo_path: str) -> Tuple[Dict[str, Commit], Dict[str, List[str]]]:
     """Parses all commits from the repository and returns a tuple of (commits, branch_commits)."""

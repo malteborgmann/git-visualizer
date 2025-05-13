@@ -31,8 +31,12 @@ def git_repo(tmp_path):
     repo_path.mkdir()
 
     subprocess.run(["git", "init"], cwd=repo_path, check=True)
-    subprocess.run(["git", "config", "user.name", "Test User"], cwd=repo_path, check=True)
-    subprocess.run(["git", "config", "user.email", "test@example.com"], cwd=repo_path, check=True)
+    subprocess.run(
+        ["git", "config", "user.name", "Test User"], cwd=repo_path, check=True
+    )
+    subprocess.run(
+        ["git", "config", "user.email", "test@example.com"], cwd=repo_path, check=True
+    )
     subprocess.run(
         ["git", "symbolic-ref", "HEAD", "refs/heads/main"],
         cwd=repo_path,
@@ -90,7 +94,7 @@ def test_count_lines_of_code(git_repo):
 
 def test_repo_stats(git_repo):
     total, ignored_count, loc, hooks = get_repo_stats(git_repo)
-    # tracked + .gitignore = 2 
+    # tracked + .gitignore = 2
     assert total == 2
     assert ignored_count == 1
     assert loc == 3
@@ -116,6 +120,7 @@ def test_load_repository_data(git_repo):
     repo = load_repository_data(git_repo)
     assert isinstance(repo, Repository)
     assert set(repo.branches.keys()) == {"main", "feature/test"}
+
 
 def test_run_git_command_failure(tmp_path):
     fake_path = tmp_path / "not_a_repo"

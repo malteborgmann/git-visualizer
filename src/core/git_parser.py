@@ -8,16 +8,18 @@ from src.core.git_commit_parser import parse_commits
 from src.core.git_stats import get_repo_stats
 
 
-
-
 def load_repository_data(repo_path: str) -> Repository:
     """Loads all relevant data from the Git repository."""
     commits_data, branch_commits = parse_commits(repo_path)
     branches = parse_branches(repo_path, commits_data, branch_commits)
 
-
     total_files, ignored_count, loc, hooks = get_repo_stats(repo_path)
 
-    return Repository(path=repo_path, branches=branches, 
-                      loc=loc, ignored=ignored_count, total_files=total_files,
-                      hooks=hooks)
+    return Repository(
+        path=repo_path,
+        branches=branches,
+        loc=loc,
+        ignored=ignored_count,
+        total_files=total_files,
+        hooks=hooks,
+    )

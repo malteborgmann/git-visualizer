@@ -28,7 +28,6 @@ class GitVisualizerApp(App):
         locals.expand()
         remotes.expand()
 
-        
         for branch_name, branch in self.repository.branches.items():
             # Wähle den richtigen Eltern-Knoten
             parent: TreeNode = remotes if branch.is_remote else locals
@@ -56,22 +55,20 @@ class GitVisualizerApp(App):
             Static(f"📁 Files: {self.repository.total_files}", id="stat_files"),
             Static(f"📦 Ignored: {self.repository.ignored}", id="stat_ignored"),
             Static(f"📄 Lines of Code (LOC): {self.repository.loc}", id="stat_lines"),
-            Static(f"🪝 Hooks: {self.repository.hooks if self.repository.hooks else 'None'}", id="stat_hooks")
-            ,id="stats_header")
-
-        branch_stats_column = Vertical(
-            tree,
-            stats,
-            id="left_column"
+            Static(
+                f"🪝 Hooks: {self.repository.hooks if self.repository.hooks else 'None'}",
+                id="stat_hooks",
+            ),
+            id="stats_header",
         )
 
+        branch_stats_column = Vertical(tree, stats, id="left_column")
 
         detials_plots_column = VerticalScroll(
             Static("Select a commit to see details", id="details"),
             PlotextPlot(id="plot", name="plotext_plot"),
-            id="right_column"
+            id="right_column",
         )
-
 
         data_table = DataTable(
             name="data_table",
@@ -83,8 +80,6 @@ class GitVisualizerApp(App):
         yield branch_stats_column
         yield data_table
         yield detials_plots_column
-        
-
 
     def on_mount(self) -> None:
         table = self.query_one(DataTable)
@@ -100,7 +95,6 @@ class GitVisualizerApp(App):
 
         self.plot = self.query_one(PlotextPlot)
         self.plot.plt.title("Commits per User")
-        
 
     def on_tree_node_selected(self, event: Tree.NodeSelected) -> None:
         node: TreeNode = event.node
@@ -126,14 +120,13 @@ class GitVisualizerApp(App):
 
     def setup_plot(self, labels: list[str], values: list[int]) -> None:
         """Erzeugt oder aktualisiert das Balkendiagramm mit neuen Daten."""
-       
+
         plot = self.plot
         plt = plot.plt
         plt.clear_data()
-        #plt = self.query_one(PlotextPlot).plt             # löscht alte Daten
-        plt.bar(labels, values)       # setzt neue Balken  
+        # plt = self.query_one(PlotextPlot).plt             # löscht alte Daten
+        plt.bar(labels, values)  # setzt neue Balken
         plot.refresh()
-        
 
     def on_data_table_row_highlighted(self, event) -> None:
         """
@@ -164,7 +157,6 @@ class GitVisualizerApp(App):
             f"[b]Changed files:[/b]\n"
             + ("\n".join(f"- {f.path}" for f in changed) or "–")
         )
-
 
 
 def node_exists_by_label(parent: TreeNode, label: str) -> bool:

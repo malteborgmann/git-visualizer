@@ -1,6 +1,7 @@
 from typing import Dict
 from src.core.models import Branch, Commit
 
+
 def get_commits_per_user(branch: Branch) -> Dict[str, int]:
     """
     Gibt die Anzahl der Commits pro User zurück.

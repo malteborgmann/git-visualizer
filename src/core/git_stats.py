@@ -2,6 +2,7 @@ import os
 from typing import List, Tuple
 from src.core.git_command_runner import run_git_command
 
+
 def _get_ignored_paths(repo_path: str) -> List[str]:
     """
     Liefert alle Dateien/Verzeichnisse zurück, die laut .gitignore ignoriert werden.
@@ -12,6 +13,7 @@ def _get_ignored_paths(repo_path: str) -> List[str]:
     )
     # Jede Zeile ist relativ zum repo_path
     return [line for line in output.splitlines() if line.strip()]
+
 
 def _get_hooks(repo_path: str) -> List[str]:
     """
@@ -29,6 +31,7 @@ def _get_hooks(repo_path: str) -> List[str]:
             hooks.append(name)
     return hooks
 
+
 def _count_lines_of_code(repo_path: str) -> int:
     """
     Zählt die Gesamtzahl der Zeilen in allen getrackten Dateien des Repos.
@@ -45,6 +48,7 @@ def _count_lines_of_code(repo_path: str) -> int:
             # kann z.B. bei Binärdateien oder fehlenden Rechten passieren
             continue
     return total
+
 
 def get_repo_stats(repo_path: str) -> Tuple[int, int, int, List[str]]:
     """

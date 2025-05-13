@@ -2,6 +2,7 @@ from typing import List, Dict
 from src.core.models import Commit, Branch
 from src.core.git_command_runner import run_git_command
 
+
 def _get_default_branch(repo_path: str) -> str:
     """Ermittelt den Namen des Default-Branches."""
     try:
@@ -19,7 +20,7 @@ def _get_default_branch(repo_path: str) -> str:
             return default_branch
         except (RuntimeError, ValueError):
             return "main"  # Fallback auf "main" wenn nichts anderes gefunden wird
-        
+
 
 def parse_branches(
     repo_path: str,
