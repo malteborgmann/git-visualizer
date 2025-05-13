@@ -1,5 +1,7 @@
 from textual.app import App, ComposeResult
 from textual.widgets import Tree, LoadingIndicator, Static, DataTable
+from textual.containers import Vertical
+
 from src.core.models import Repository, Branch
 from textual.widgets.tree import TreeNode
 
@@ -47,7 +49,18 @@ class GitVisualizerApp(App):
             category_node.expand()
             category_node.add_leaf(branch_name, branch)
 
-        yield tree
+        branch_column = Vertical(
+            tree,
+            Static("📁 Files: 72", id="stat_files"),
+            Static("📦 Ignored: 14", id="stat_ignored"),
+            Static("📄 LOC: 3942", id="stat_lines"),
+            Static("🪝 Hooks: pre-commit, pre-push", id="stat_hooks"),
+            id="left_column"
+        )
+
+        yield branch_column
+
+        #yield tree
 
         yield DataTable(
             name="data_table",
@@ -77,7 +90,7 @@ class GitVisualizerApp(App):
             return
 
         self.current_branch = branch
-        table = self.query_one(DataTable)
+        table = self.query_one("#data_table")
         table.clear()
 
         for hash, commit in branch.commits.items():
@@ -103,7 +116,7 @@ class GitVisualizerApp(App):
         if commit is None:
             return
 
-        details = self.query_one(Static)
+        details = self.query_one("#details")
 
         added = str(commit.lines_added)
         deleted = str(commit.lines_deleted)
