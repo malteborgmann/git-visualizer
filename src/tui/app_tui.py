@@ -49,12 +49,16 @@ class GitVisualizerApp(App):
             category_node.expand()
             category_node.add_leaf(branch_name, branch)
 
+        stats = Vertical(
+            Static(f"📁 Files: {self.repository.total_files}", id="stat_files"),
+            Static(f"📦 Ignored: {self.repository.ignored}", id="stat_ignored"),
+            Static(f"📄 Lines of Code (LOC): {self.repository.loc}", id="stat_lines"),
+            Static(f"🪝 Hooks: {self.repository.hooks if self.repository.hooks else 'None'}", id="stat_hooks")
+            ,id="stats_header")
+
         branch_column = Vertical(
             tree,
-            Static("📁 Files: 72", id="stat_files"),
-            Static("📦 Ignored: 14", id="stat_ignored"),
-            Static("📄 LOC: 3942", id="stat_lines"),
-            Static("🪝 Hooks: pre-commit, pre-push", id="stat_hooks"),
+            stats,
             id="left_column"
         )
 
