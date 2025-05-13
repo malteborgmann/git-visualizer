@@ -6,15 +6,11 @@ import os
 import sys
 import json
 
-current_dir = os.path.dirname(os.path.abspath(__file__))
-if current_dir not in sys.path:
-    sys.path.append(current_dir)
-
-from core.git_parser import load_repository_data
-from utils.file_utils import is_valid_git_repo
-from tui.app_tui import GitVisualizerApp
-from utils.branch_json_utils import classify_branch, load_branch_config
-from utils.naming_json_utils import load_name_config, get_name_by_mail
+from src.core.git_parser import load_repository_data
+from src.utils.file_utils import is_valid_git_repo
+from src.tui.app_tui import GitVisualizerApp
+from src.utils.branch_json_utils import classify_branch, load_branch_config
+from src.utils.naming_json_utils import load_name_config, get_name_by_mail
 
 
 def main():
@@ -116,4 +112,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    main() 

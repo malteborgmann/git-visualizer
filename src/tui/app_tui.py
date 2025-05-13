@@ -1,6 +1,6 @@
 from textual.app import App, ComposeResult
 from textual.widgets import Tree, LoadingIndicator, Static, DataTable
-from core.models import Repository, Branch
+from src.core.models import Repository, Branch
 from textual.widgets.tree import TreeNode
 
 

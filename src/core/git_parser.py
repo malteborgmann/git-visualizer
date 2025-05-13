@@ -2,7 +2,7 @@ import subprocess
 from datetime import datetime, timezone
 from typing import List, Dict, Tuple
 
-from core.models import Commit, Branch, Repository, ChangedFile
+from src.core.models import Commit, Branch, Repository, ChangedFile
 
 
 def _run_git_command(command: List[str], repo_path: str) -> str:
