@@ -10,6 +10,7 @@ from src.core.git_commit_parser import parse_commits
 from src.core.git_branch_parser import parse_branches, _get_default_branch
 from src.core.git_stats import (
     _get_ignored_paths,
+    _get_ignored_files,
     _get_hooks,
     _count_lines_of_code,
     get_repo_stats,
@@ -43,7 +44,7 @@ def git_repo(tmp_path):
         check=True,
     )
 
-    (repo_path / ".gitignore").write_text("ignored.txt\n")
+    (repo_path / ".gitignore").write_text("ignored.txt\n__pychache__\n")
     subprocess.run(["git", "add", ".gitignore"], cwd=repo_path, check=True)
     (repo_path / "tracked.txt").write_text("line1\nline2\n")
     subprocess.run(["git", "add", "tracked.txt"], cwd=repo_path, check=True)
@@ -75,10 +76,17 @@ def test_default_branch(git_repo):
     assert _get_default_branch(git_repo) == "main"
 
 
+def test_ignored_files(git_repo):
+    ignored = _get_ignored_files(git_repo)
+    assert "ignored.txt" in ignored
+    print(ignored)
+    assert all("ignored.txt" in p for p in ignored)
+
+
 def test_ignored_paths(git_repo):
     ignored = _get_ignored_paths(git_repo)
     assert "ignored.txt" in ignored
-    assert all("ignored.txt" in p for p in ignored)
+    assert "__pychache__" in ignored
 
 
 def test_hooks(git_repo):

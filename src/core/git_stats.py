@@ -5,13 +5,52 @@ from src.core.git_command_runner import run_git_command
 
 def _get_ignored_paths(repo_path: str) -> List[str]:
     """
+    Such nach allen .gitignore dateien im Projekt und fügt diese hinzu
+    Args:
+        repo_path:
+
+    Returns:
+
+    """
+    gitignore_files = []
+    patterns = set()
+
+    # ------------------------------------------------------------
+    matched_ignores = _get_ignored_files(repo_path)
+    is_ignored = lambda sp: any(
+        sp == pat.rstrip('/') or sp.startswith(pat.rstrip('/'))
+        for pat in matched_ignores
+    )
+    # ------------------------------------------------------------
+
+    for path, _, files in os.walk(repo_path):
+
+        striped_path = path.replace(repo_path, "") # Liefert den relativen Pfad
+        if is_ignored(striped_path):
+            continue
+            # Das hier mache ich tatsächlich nur, damit ich nicht
+            # gitignores aus bereits ignorierten Pfaden mit reinnehme
+
+        if ".gitignore" in files:
+            gitignore_files.append(os.path.join(path, ".gitignore"))
+
+    for file in gitignore_files:
+        with open(file, "r") as f:
+            lines = map(lambda s: str(s).replace("\n", ""), f.readlines())
+            lines = filter(lambda s: not str(s).strip().startswith("#"), lines)
+            patterns = patterns.union(lines)
+    return list(patterns)
+
+
+def _get_ignored_files(repo_path: str) -> List[str]:
+    """
     Liefert alle Dateien/Verzeichnisse zurück, die laut .gitignore ignoriert werden.
     """
+    print(repo_path)
     output = run_git_command(
         ["ls-files", "--others", "--ignored", "--exclude-standard", "--directory"],
         repo_path,
     )
-    # Jede Zeile ist relativ zum repo_path
     return [line for line in output.splitlines() if line.strip()]
 
 
@@ -65,3 +104,6 @@ def get_repo_stats(repo_path: str) -> Tuple[int, int, int, List[str]]:
     hooks = _get_hooks(repo_path)
 
     return total_files, ignored_count, loc, hooks
+
+if __name__ == '__main__':
+    print(_get_ignored_paths("/Users/malteborgmann/Projects/git-visualizer/"))
