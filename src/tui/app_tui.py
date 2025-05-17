@@ -52,8 +52,10 @@ class GitVisualizerApp(App):
             category_node.add_leaf(branch_name, branch)
 
         stats = Vertical(
-            Static(f"📁 Files: {self.repository.total_files}", id="stat_files"),
-            Static(f"📦 Ignored: {self.repository.ignored}", id="stat_ignored"),
+            # https://getemoji.com/
+            Static(f"📁 Files: {len(self.repository.total_files)}", id="stat_files"),
+            Static(f"🚫 Ignored Pattern: {len(self.repository.ignored_pattern)}", id="stat_ignored_pattern"),
+            Static(f"📦 Ignored Matched: {len(self.repository.ignored_matched)}", id="stat_ignored_matched"),
             Static(f"📄 Lines of Code (LOC): {self.repository.loc}", id="stat_lines"),
             Static(
                 f"🪝 Hooks: {self.repository.hooks if self.repository.hooks else 'None'}",

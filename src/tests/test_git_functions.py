@@ -96,16 +96,17 @@ def test_hooks(git_repo):
 
 
 def test_count_lines_of_code(git_repo):
-    # tracked.txt (2 line) + .gitignore (1 line) = 5
-    assert _count_lines_of_code(git_repo) == 3
+    # tracked.txt (2 line) + .gitignore (2 line) = 4
+    assert _count_lines_of_code(git_repo) == 4
 
 
 def test_repo_stats(git_repo):
-    total, ignored_count, loc, hooks = get_repo_stats(git_repo)
+    total_files, ignored_matched, ignored_pattern, hooks, loc = get_repo_stats(git_repo)
     # tracked + .gitignore = 2
-    assert total == 2
-    assert ignored_count == 1
-    assert loc == 3
+    assert len(total_files) == 2
+    assert len(ignored_matched) == 1
+    assert len(ignored_pattern) == 2
+    assert loc == 4
     assert hooks == ["pre-commit"]
 
 

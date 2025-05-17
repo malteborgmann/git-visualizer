@@ -3,11 +3,12 @@ from typing import List, Tuple
 from src.core.git_command_runner import run_git_command
 
 
-def _get_ignored_paths(repo_path: str) -> List[str]:
+def _get_ignored_paths(repo_path: str, matched_ignores: List = []) -> List[str]:
     """
     Such nach allen .gitignore dateien im Projekt und fügt diese hinzu
     Args:
         repo_path:
+        matched_ignores: List -> Gib mir eine Liste an von Pfaden, die bereits ignoriert sind
 
     Returns:
 
@@ -16,7 +17,6 @@ def _get_ignored_paths(repo_path: str) -> List[str]:
     patterns = set()
 
     # ------------------------------------------------------------
-    matched_ignores = _get_ignored_files(repo_path)
     is_ignored = lambda sp: any(
         sp == pat.rstrip('/') or sp.startswith(pat.rstrip('/'))
         for pat in matched_ignores
@@ -24,7 +24,6 @@ def _get_ignored_paths(repo_path: str) -> List[str]:
     # ------------------------------------------------------------
 
     for path, _, files in os.walk(repo_path):
-
         striped_path = path.replace(repo_path, "") # Liefert den relativen Pfad
         if is_ignored(striped_path):
             continue
@@ -89,21 +88,21 @@ def _count_lines_of_code(repo_path: str) -> int:
     return total
 
 
-def get_repo_stats(repo_path: str) -> Tuple[int, int, int, List[str]]:
+def get_repo_stats(repo_path: str) -> tuple[list[str], list[str], list[str], list[str], int]:
     """
     Liefert ein Tupel (total_files, ignored_count, loc, hooks_list).
     """
     # Gesamtzahl der getrackten Dateien
-    files = run_git_command(["ls-files"], repo_path).splitlines()
-    total_files = len(files)
+    total_files = run_git_command(["ls-files"], repo_path).splitlines()
 
-    ignored = _get_ignored_paths(repo_path)
-    ignored_count = len(ignored)
+    ignored_matched = _get_ignored_files(repo_path)
+
+    ignored_pattern = _get_ignored_paths(repo_path, matched_ignores=ignored_matched)
 
     loc = _count_lines_of_code(repo_path)
     hooks = _get_hooks(repo_path)
 
-    return total_files, ignored_count, loc, hooks
+    return total_files, ignored_matched, ignored_pattern, hooks, loc
 
 if __name__ == '__main__':
     print(_get_ignored_paths("/Users/malteborgmann/Projects/git-visualizer/"))
