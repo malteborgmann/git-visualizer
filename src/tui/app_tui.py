@@ -9,6 +9,7 @@ from textual.widgets import (
     Tabs,
     TabbedContent,
     TabPane,
+    Footer
 )
 from textual.scroll_view import ScrollView
 from textual.containers import Vertical, ScrollableContainer, VerticalScroll
@@ -29,7 +30,10 @@ MARKERS = {
 class GitVisualizerApp(App):
     CSS_PATH = "styles.tcss"
 
-    BINDINGS = [("q", "quit", "Quit")]
+    BINDINGS = [
+        ("q", "quit", "Quit"),
+        ("t", "toggle_tab", "Toggle Tab")
+        ]
 
     def __init__(self, repository: Repository):
         super().__init__()
@@ -89,6 +93,7 @@ class GitVisualizerApp(App):
         plots = Vertical(
             PlotextPlot(id="plot_user_commits"),
             PlotextPlot(id="time_series_plot"),
+            PlotextPlot(id="added_deleted_lines"),
             id="plots_column",
         )
 
@@ -100,6 +105,8 @@ class GitVisualizerApp(App):
                 yield details_plots_column
             with TabPane("Stats", id="StatsTab"):
                 yield plots
+        
+        yield Footer()
 
     def on_mount(self) -> None:
         # self.query_one(Tabs).focus()
@@ -131,15 +138,6 @@ class GitVisualizerApp(App):
         plot.refresh()
 
 
-    def on_tabs_tab_activated(self, event: Tabs.TabActivated) -> None:
-        """Handle TabActivated message sent by Tabs."""
-        print(f"Tab activated: {event.tab.id}")
-        l = self.query_one(Label)
-        if event.tab.id == "one":
-            l.visible = True
-        elif event.tab.id == "two":
-            l.visible = False
-
     def on_tree_node_selected(self, event: Tree.NodeSelected) -> None:
         node: TreeNode = event.node
         branch = node.data
@@ -162,6 +160,10 @@ class GitVisualizerApp(App):
 
         self.setup_user_commit_plot(branch.user_commits.keys(), branch.user_commits.values())
         self.setup_time_series_plot(list(branch.day_commits.keys()), list(branch.day_commits.values()))
+        self.setup_added_delete_plot()
+
+    def setup_added_delete_plot(self):
+        pass
 
     def setup_time_series_plot(self, labels=[], values=[]) -> None:
         """Erzeugt oder aktualisiert das Balkendiagramm mit neuen Daten."""
@@ -252,6 +254,18 @@ class GitVisualizerApp(App):
             category_node = parent.add(str(category))
             category_node.expand()
             category_node.add_leaf(branch_name, branch)
+
+    def action_toggle_tab(self) -> None:
+        """An action to the activated tab."""
+        content = self.query_one(TabbedContent)
+        if content.active == None:
+            return
+        elif content.active == "CommitsTab":
+            content.active = "StatsTab"
+        elif content.active == "StatsTab":
+            content.active = "CommitsTab"
+        
+
 
 
 def node_exists_by_label(parent: TreeNode, label: str) -> bool:
