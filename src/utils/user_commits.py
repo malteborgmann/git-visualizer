@@ -1,4 +1,5 @@
 from typing import Dict
+
 from src.core.models import Branch, Commit
 
 

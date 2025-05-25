@@ -1,24 +1,23 @@
-from textual.app import App, ComposeResult
-from textual.widgets import (
-    Tree,
-    Static,
-    DataTable,
-    TabbedContent,
-    TabPane,
-    Footer,
-    Input,
-    Button,
-)
-from textual.widgets.tree import TreeNode
-from textual.containers import Vertical, Container
-from textual_plotext import PlotextPlot
-from textual.screen import ModalScreen
-from textual.message import Message
-
 import os
 
+from textual.app import App, ComposeResult
+from textual.containers import Container, Vertical
+from textual.message import Message
+from textual.screen import ModalScreen
+from textual.widgets import (
+    Button,
+    DataTable,
+    Footer,
+    Input,
+    Static,
+    TabbedContent,
+    TabPane,
+    Tree,
+)
+from textual.widgets.tree import TreeNode
+from textual_plotext import PlotextPlot
 
-from src.core.models import Repository, Branch
+from src.core.models import Branch, Repository
 from src.export.export_pdf_dashboard import create_dashboard_pdf
 
 
@@ -55,7 +54,7 @@ class ExportDialog(ModalScreen):
             if not export_path.endswith(".pdf"):
                 export_path += ".pdf"
 
-            self.app.export_requested(ExportRequested(export_path))
+            self.app.export_requested(ExportRequested(export_path))  # type: ignore
         self.dismiss()
 
 
@@ -71,7 +70,7 @@ class GitVisualizerApp(App):
     def __init__(self, repository: Repository):
         super().__init__()
         self.repository = repository
-        self.current_branch: Branch = None
+        self.current_branch: Branch
 
     def compose(self) -> ComposeResult:
         # ==========================
@@ -155,7 +154,7 @@ class GitVisualizerApp(App):
         )
 
         # TODO:
-        plot = self.query_one("#plot_user_commits")
+        plot = self.query_one("#plot_user_commits", PlotextPlot)
         plot.plt.title("Commits per User")
         plot.plt.xlabel("User")
         plot.plt.ylabel("Number of Commits")
@@ -163,7 +162,7 @@ class GitVisualizerApp(App):
         plot.plt.bar([], [])  # Initial empty bar chart
         plot.refresh()
 
-        plot = self.query_one("#time_series_plot")
+        plot = self.query_one("#time_series_plot", PlotextPlot)
         plot.plt.title("Commits over Time")
 
         plot.plt.grid(True)
@@ -177,7 +176,7 @@ class GitVisualizerApp(App):
             return
 
         self.current_branch = branch
-        table = self.query_one("#data_table")
+        table = self.query_one("#data_table", DataTable)
         table.clear()
 
         for hash, commit in branch.commits.items():
@@ -191,7 +190,7 @@ class GitVisualizerApp(App):
             )
 
         self.setup_user_commit_plot(
-            branch.user_commits.keys(), branch.user_commits.values()
+            list(branch.user_commits.keys()), list(branch.user_commits.values())
         )
         self.setup_time_series_plot(
             list(branch.day_commits.keys()), list(branch.day_commits.values())
@@ -204,7 +203,7 @@ class GitVisualizerApp(App):
     def setup_time_series_plot(self, labels=[], values=[]) -> None:
         """Erzeugt oder aktualisiert das Balkendiagramm mit neuen Daten."""
 
-        plot = self.query_one("#time_series_plot")
+        plot = self.query_one("#time_series_plot", PlotextPlot)
         plt = plot.plt
         plt.clear_data()
         # plt.data_form = "%d/%m/%Y"
@@ -218,7 +217,7 @@ class GitVisualizerApp(App):
         x = list(
             range(num_points)
         )  # Cant use labels directly due to a issue in the textualize package
-        plt.plot(x, values, marker="dot", color="cyan")
+        plt.plot(x, values, color="cyan")
         ticks = min(10, num_points)
 
         positions = [int(i * (num_points - 1) / (ticks - 1)) for i in range(ticks)]
@@ -232,7 +231,7 @@ class GitVisualizerApp(App):
     def setup_user_commit_plot(self, labels: list[str], values: list[int]) -> None:
         """Erzeugt oder aktualisiert das Balkendiagramm mit neuen Daten."""
 
-        plot = self.query_one("#plot_user_commits")
+        plot = self.query_one("#plot_user_commits", PlotextPlot)
         plt = plot.plt
         plt.clear_data()
         # plt = self.query_one(PlotextPlot).plt             # löscht alte Daten

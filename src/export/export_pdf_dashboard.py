@@ -1,14 +1,29 @@
+"""
+This is the main module for export package. Orchestrates the export to PDF files and is the main entry point
+
+"""
 # TODO: Auslagern in mehrere Funktionen, damit es cleaner ist
-from matplotlib.backends.backend_pdf import PdfPages
-import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
 from datetime import datetime, timedelta
-import pandas as pd
+
+from matplotlib.backends.backend_pdf import PdfPages
+import matplotlib.dates as mdates
+import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
+
+from src.core.models import Branch
 
 
-def create_dashboard_pdf(branch, filename="dashboard.pdf"):
-    with PdfPages(filename) as pdf:
+def create_dashboard_pdf(branch: Branch, filepath: str) -> None:
+    """Generates graphics with Matplotlib and saves them into an PDF file. 
+    Takes a Branch object as input and extract the necessary information
+
+    Args:
+        branch (Branch): This is the Branch-Object, that contains all the information about Commits and Users.
+        filepath (str): Filepath to export the PDF to.
+    """
+    
+    with PdfPages(filepath) as pdf:
         # --------- Commits pro User ---------
         if branch.user_commits:
             df_user = pd.DataFrame.from_dict(
@@ -114,4 +129,4 @@ def create_dashboard_pdf(branch, filename="dashboard.pdf"):
             pdf.savefig(fig)
             plt.close(fig)
 
-    print(f"PDF-Dashboard gespeichert als '{filename}'")
+    print(f"PDF-Dashboard gespeichert als '{filepath}'")

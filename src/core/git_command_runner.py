@@ -1,5 +1,5 @@
+from typing import Dict, List, Tuple
 import subprocess
-from typing import List, Dict, Tuple
 
 
 def run_git_command(command: List[str], repo_path: str) -> str:

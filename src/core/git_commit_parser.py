@@ -1,8 +1,8 @@
 from datetime import datetime, timezone
-from typing import List, Dict, Tuple
+from typing import Dict, List, Tuple
 
-from src.core.models import Commit, ChangedFile
 from src.core.git_command_runner import run_git_command
+from src.core.models import ChangedFile, Commit
 
 
 def parse_commits(repo_path: str) -> Tuple[Dict[str, Commit], Dict[str, List[str]]]:

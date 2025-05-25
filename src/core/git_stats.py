@@ -1,5 +1,6 @@
-import os
 from typing import List, Tuple
+import os
+
 from src.core.git_command_runner import run_git_command
 
 

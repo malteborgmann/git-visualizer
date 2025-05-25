@@ -1,20 +1,21 @@
+from pathlib import Path
 import os
 import stat
 import subprocess
-import pytest
-from pathlib import Path
 
+import pytest
+
+from src.core.git_branch_parser import _get_default_branch, parse_branches
 from src.core.git_command_runner import run_git_command
-from src.core.git_parser import load_repository_data
 from src.core.git_commit_parser import parse_commits
-from src.core.git_branch_parser import parse_branches, _get_default_branch
+from src.core.git_parser import load_repository_data
 from src.core.git_stats import (
-    _get_ignored_paths,
-    _get_hooks,
     _count_lines_of_code,
+    _get_hooks,
+    _get_ignored_paths,
     get_repo_stats,
 )
-from src.core.models import Repository, Branch
+from src.core.models import Branch, Repository
 
 
 @pytest.fixture

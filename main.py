@@ -1,17 +1,15 @@
 # This file is used for testing and development purposes for now.
 # Later on, it will be used to run the main program -> Need to clean up the code and remove the prints
 
+from datetime import datetime, timedelta
 import argparse
 import os
-import sys
-import json
-from datetime import datetime, timedelta
 
 from src.core.git_parser import load_repository_data
-from src.utils.file_utils import is_valid_git_repo
 from src.tui.app_tui import GitVisualizerApp
 from src.utils.branch_json_utils import classify_branch, load_branch_config
-from src.utils.naming_json_utils import load_name_config, get_name_by_mail
+from src.utils.file_utils import is_valid_git_repo
+from src.utils.naming_json_utils import get_name_by_mail, load_name_config
 from src.utils.user_commits import get_commits_per_user
 
 
@@ -71,10 +69,8 @@ def main():
 
     try:
         # Categorize branches based on the branch_config
-        start = datetime.now()
+
         repository_data = load_repository_data(repo_path)
-        print(f"Loading took {datetime.now() - start}")
-        start = datetime.now()
         if branch_config_path:
             branch_config = load_branch_config(branch_config_path)
             for branch in repository_data.branches.values():
@@ -96,7 +92,7 @@ def main():
             )
             # print(f"Branch: {branch.name}, User Commits: {branch.user_commits.keys()}")
 
-        day_format = "%d/%m/%Y"  # Format for the day keys in day_commits
+        day_format =  "%d/%m/%Y"  # Format for the day keys in day_commits
         for branch in repository_data.branches.values():
             branch.day_commits = {}
             for commit in branch.commits.values():
@@ -104,7 +100,7 @@ def main():
                 if day not in branch.day_commits:
                     branch.day_commits[day] = 0
                 branch.day_commits[day] += 1
-
+            
             first_day = datetime.strptime(min(branch.day_commits.keys()), day_format)
             last_day = datetime.strptime(max(branch.day_commits.keys()), day_format)
 
@@ -116,14 +112,12 @@ def main():
                 current_day += timedelta(days=1)
 
             branch.day_commits = dict(
-                sorted(
-                    branch.day_commits.items(),
-                    key=lambda x: datetime.strptime(x[0], day_format),
-                )
+                sorted(branch.day_commits.items(), key=lambda x: datetime.strptime(x[0], day_format))
             )
 
-            print(f"Branch: {branch.name}, Day Commits: {branch.day_commits.keys()}")
-        print(f"Computing took {datetime.now() - start}")
+            print(
+                f"Branch: {branch.name}, Day Commits: {branch.day_commits.keys()}"
+            )
 
         print("\nQueried Repository")
         print(f"Path: {repository_data.path}")
@@ -140,6 +134,8 @@ def main():
                     f"    Commit: {commit_hash} by {commit.author_name} on {commit.date}"
                 )
             break
+            
+        
 
         app = GitVisualizerApp(repository=repository_data)
         app.run()

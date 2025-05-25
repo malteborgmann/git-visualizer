@@ -1,6 +1,8 @@
 import json
 import os
+
 import pytest
+
 from src.utils.branch_json_utils import classify_branch
 
 CONFIG_DATA = {

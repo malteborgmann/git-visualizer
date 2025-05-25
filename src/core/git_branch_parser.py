@@ -1,6 +1,7 @@
-from typing import List, Dict
-from src.core.models import Commit, Branch
+from typing import Dict, List
+
 from src.core.git_command_runner import run_git_command
+from src.core.models import Branch, Commit
 
 
 def _get_default_branch(repo_path: str) -> str:

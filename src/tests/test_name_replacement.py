@@ -1,7 +1,9 @@
-import json
-import pytest
 from tempfile import NamedTemporaryFile
-from src.utils.naming_json_utils import load_name_config, get_name_by_mail
+import json
+
+import pytest
+
+from src.utils.naming_json_utils import get_name_by_mail, load_name_config
 
 # Beispiel-Datenstruktur
 NAME_CONFIG = {

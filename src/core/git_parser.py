@@ -1,11 +1,11 @@
-import subprocess
 from datetime import datetime, timezone
-from typing import List, Dict, Tuple
+from typing import Dict, List, Tuple
+import subprocess
 
-from src.core.models import Commit, Branch, Repository, ChangedFile
 from src.core.git_branch_parser import parse_branches
 from src.core.git_commit_parser import parse_commits
 from src.core.git_stats import get_repo_stats
+from src.core.models import Branch, ChangedFile, Commit, Repository
 
 
 def load_repository_data(repo_path: str) -> Repository:
