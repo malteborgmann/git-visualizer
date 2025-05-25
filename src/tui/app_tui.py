@@ -52,7 +52,7 @@ class ExportDialog(ModalScreen):
             )
 
             export_path = os.path.join(os.getcwd(), raw_input)
-            if export_path[-4] != ".pdf":
+            if not export_path.endswith(".pdf"):
                 export_path += ".pdf"
 
             self.app.export_requested(ExportRequested(export_path))
@@ -308,9 +308,11 @@ class GitVisualizerApp(App):
         self.push_screen(ExportDialog())
 
     def export_requested(self, event: ExportRequested) -> None:
-        print("[INFO] Export event received!")  # zum Testen
+        if not self.current_branch:
+            self.notify("First select a Branch", timeout=3)
+            return
         filename = event.filename
-        create_dashboard_pdf(self.repository, filename)
+        create_dashboard_pdf(self.current_branch, filename)
         self.notify(f"Exported to {filename}", timeout=3)
 
 
