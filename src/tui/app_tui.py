@@ -1,5 +1,5 @@
 from textual.app import App, ComposeResult
-from textual.widgets import Tree, LoadingIndicator, Static, DataTable, Label, TextArea
+from textual.widgets import Tree, LoadingIndicator, Static, DataTable, Label, TextArea, Tabs, TabbedContent, TabPane
 from textual.scroll_view import ScrollView
 from textual.containers import Vertical, ScrollableContainer, VerticalScroll
 from textual_plotext import PlotextPlot
@@ -19,6 +19,10 @@ class GitVisualizerApp(App):
         self.current_branch: Branch = None
 
     def compose(self) -> ComposeResult:
+
+        # ==========================
+        # BRANCH TREE AND STATS
+        # ==========================
         tree = Tree("Branches", id="branch_tree")
         tree.root.expand()
 
@@ -28,47 +32,22 @@ class GitVisualizerApp(App):
         locals.expand()
         remotes.expand()
 
-        for branch_name, branch in self.repository.branches.items():
-            # Wähle den richtigen Eltern-Knoten
-            parent: TreeNode = remotes if branch.is_remote else locals
-            category = branch.category  # z.B. "feature", "bugfix" etc.
-
-            branch_name = branch.name.split("/")[-1]
-
-            if category is None:
-                parent.add_leaf(branch_name, branch)
-                continue
-
-            exists = False
-            for child in parent.children:
-                if str(child.label.plain) == str(category):
-                    child.add_leaf(branch_name, branch)
-                    exists = True
-                    break
-            if exists:
-                continue
-            category_node = parent.add(str(category))
-            category_node.expand()
-            category_node.add_leaf(branch_name, branch)
+        self.setup_tree_branches(locals, remotes)
 
         stats = Vertical(
             Static(f"📁 Files: {self.repository.total_files}", id="stat_files"),
             Static(f"📦 Ignored: {self.repository.ignored}", id="stat_ignored"),
             Static(f"📄 Lines of Code (LOC): {self.repository.loc}", id="stat_lines"),
-            Static(
-                f"🪝 Hooks: {self.repository.hooks if self.repository.hooks else 'None'}",
-                id="stat_hooks",
-            ),
+            Static(f"🪝 Hooks: {self.repository.hooks if self.repository.hooks else 'None'}",id="stat_hooks",),
             id="stats_header",
         )
 
-        branch_stats_column = Vertical(tree, stats, id="left_column")
+        branch_tree_and_stats = Vertical(tree, stats, id="left_column")
+        yield branch_tree_and_stats
 
-        detials_plots_column = VerticalScroll(
-            Static("Select a commit to see details", id="details"),
-            PlotextPlot(id="plot", name="plotext_plot"),
-            id="right_column",
-        )
+        # ===========================
+        # DataTable and Details
+        # ===========================
 
         data_table = DataTable(
             name="data_table",
@@ -77,11 +56,39 @@ class GitVisualizerApp(App):
             show_row_labels=True,
             cursor_type="row",
         )
-        yield branch_stats_column
-        yield data_table
-        yield detials_plots_column
+
+        details_plots_column = Vertical(
+            data_table,
+            Static("Select a commit to see details", id="details"),
+        )
+
+        # ==========================
+        # PLOTS AND Analytics
+        # ==========================
+        
+
+
+        plots = Vertical(
+            PlotextPlot(id="plot", name="plotext_plot"),
+            id="plots_column",
+        )
+
+        
+
+
+
+        # ==========================
+        # TABS
+        # ==========================
+        with TabbedContent(initial="jessica"):
+            with TabPane("Commits", id="CommitsTab"):
+                yield details_plots_column
+            with TabPane("Stats", id="StatsTab"):
+                yield plots
+
 
     def on_mount(self) -> None:
+        #self.query_one(Tabs).focus()
         table = self.query_one(DataTable)
         table.add_columns(
             *(
@@ -93,8 +100,19 @@ class GitVisualizerApp(App):
             )
         )
 
+        # TODO:
         self.plot = self.query_one(PlotextPlot)
         self.plot.plt.title("Commits per User")
+
+    def on_tabs_tab_activated(self, event: Tabs.TabActivated) -> None:
+        """Handle TabActivated message sent by Tabs."""
+        print(f"Tab activated: {event.tab.id}")
+        l = self.query_one(Label)
+        if event.tab.id == "one":
+            l.visible = True
+        elif event.tab.id == "two":
+            l.visible = False
+       
 
     def on_tree_node_selected(self, event: Tree.NodeSelected) -> None:
         node: TreeNode = event.node
@@ -157,6 +175,31 @@ class GitVisualizerApp(App):
             f"[b]Changed files:[/b]\n"
             + ("\n".join(f"- {f.path}" for f in changed) or "–")
         )
+
+    def setup_tree_branches(self, locals, remotes):
+        for branch_name, branch in self.repository.branches.items():
+            # Wähle den richtigen Eltern-Knoten
+            parent: TreeNode = remotes if branch.is_remote else locals
+            category = branch.category  # z.B. "feature", "bugfix" etc.
+
+            branch_name = branch.name.split("/")[-1]
+
+            if category is None:
+                parent.add_leaf(branch_name, branch)
+                continue
+
+            exists = False
+            for child in parent.children:
+                if str(child.label.plain) == str(category):
+                    child.add_leaf(branch_name, branch)
+                    exists = True
+                    break
+            if exists:
+                continue
+            category_node = parent.add(str(category))
+            category_node.expand()
+            category_node.add_leaf(branch_name, branch)
+
 
 
 def node_exists_by_label(parent: TreeNode, label: str) -> bool:
