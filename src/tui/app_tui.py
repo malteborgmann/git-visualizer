@@ -79,14 +79,15 @@ class GitVisualizerApp(App):
         # ==========================
 
         plots = Vertical(
-            PlotextPlot(id="plot", name="plotext_plot"),
+            PlotextPlot(id="plot_user_commits"),
+            PlotextPlot(id="time_series_plot"),
             id="plots_column",
         )
 
         # ==========================
         # TABS
         # ==========================
-        with TabbedContent(initial="jessica"):
+        with TabbedContent(initial="CommitsTab"):
             with TabPane("Commits", id="CommitsTab"):
                 yield details_plots_column
             with TabPane("Stats", id="StatsTab"):
@@ -106,8 +107,22 @@ class GitVisualizerApp(App):
         )
 
         # TODO:
-        self.plot = self.query_one(PlotextPlot)
-        self.plot.plt.title("Commits per User")
+        plot = self.query_one("#plot_user_commits")
+        plot.plt.title("Commits per User")
+        plot.plt.xlabel("User")
+        plot.plt.ylabel("Number of Commits")
+        plot.plt.grid(True)
+        plot.plt.bar([], [])  # Initial empty bar chart
+        plot.refresh()
+
+        plot = self.query_one("#time_series_plot")
+        plot.plt.title("Commits over Time")
+        plot.plt.xlabel("Date")
+        plot.plt.ylabel("Number of Commits")
+        plot.plt.grid(True)
+        plot.plt.bar([], [])  # Initial empty bar chart
+        plot.refresh()
+
 
     def on_tabs_tab_activated(self, event: Tabs.TabActivated) -> None:
         """Handle TabActivated message sent by Tabs."""
@@ -138,12 +153,23 @@ class GitVisualizerApp(App):
                 key=hash,
             )
 
-        self.setup_plot(branch.user_commits.keys(), branch.user_commits.values())
+        self.setup_user_commit_plot(branch.user_commits.keys(), branch.user_commits.values())
+        self.setup_time_series_plot(branch.day_commits.keys(), branch.day_commits.values())
 
-    def setup_plot(self, labels: list[str], values: list[int]) -> None:
+    def setup_time_series_plot(self, labels=[], values=[]) -> None:
         """Erzeugt oder aktualisiert das Balkendiagramm mit neuen Daten."""
 
-        plot = self.plot
+        plot = self.query_one("#time_series_plot")
+        plt = plot.plt
+        plt.clear_data()
+        # plt = self.query_one(PlotextPlot).plt             # löscht alte Daten
+        plt.plot(labels, values)
+        plot.refresh()
+
+    def setup_user_commit_plot(self, labels: list[str], values: list[int]) -> None:
+        """Erzeugt oder aktualisiert das Balkendiagramm mit neuen Daten."""
+
+        plot = self.query_one("#plot_user_commits")
         plt = plot.plt
         plt.clear_data()
         # plt = self.query_one(PlotextPlot).plt             # löscht alte Daten

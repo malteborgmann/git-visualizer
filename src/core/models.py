@@ -33,6 +33,7 @@ class Branch:
     category: str = None
     commits: Dict[str, Commit] = field(default_factory=dict)
     user_commits: Dict[str, int] = field(default_factory=dict)
+    day_commits: Dict[datetime, int] = field(default_factory=dict)
 
 
 @dataclass
