@@ -1,39 +1,72 @@
 from textual.app import App, ComposeResult
 from textual.widgets import (
     Tree,
-    LoadingIndicator,
     Static,
     DataTable,
-    Label,
-    TextArea,
-    Tabs,
     TabbedContent,
     TabPane,
-    Footer
+    Footer,
+    Input,
+    Button,
 )
-from textual.scroll_view import ScrollView
-from textual.containers import Vertical, ScrollableContainer, VerticalScroll
+from textual.widgets.tree import TreeNode
+from textual.containers import Vertical, Container
 from textual_plotext import PlotextPlot
+from textual.screen import ModalScreen
+from textual.message import Message
+
+import os
+
 
 from src.core.models import Repository, Branch
-from textual.widgets.tree import TreeNode
+from src.export.export_pdf_dashboard import create_dashboard_pdf
 
 
-MARKERS = {
-        "dot": "Dot",
-        "hd": "High Definition",
-        "fhd": "Higher Definition",
-        "braille": "Braille",
-        "sd": "Standard Definition",
-}
+class ExportRequested(Message):
+    def __init__(self, filename: str) -> None:
+        self.filename = filename
+        super().__init__()
+
+
+class ExportDialog(ModalScreen):
+    """Modal für Dateinamen-Eingabe beim Export."""
+
+    def compose(self):
+        with Container(id="export_modal"):
+            yield Static("Enter export filename:", id="export_prompt")
+            yield Input(placeholder="branches_report.pdf", id="export_filename")
+
+            with Container(id="export_buttons"):
+                yield Button("OK", id="export_ok")
+                yield Button("Cancel", id="export_cancel")
+
+    def on_mount(self):
+        input_field = self.query_one("#export_filename", Input)
+        self.set_focus(input_field)
+
+    def on_button_pressed(self, event: Button.Pressed):
+        if event.button.id == "export_ok":
+            raw_input = (
+                self.query_one("#export_filename", Input).value.strip()
+                or "branches_report.pdf"
+            )
+
+            export_path = os.path.join(os.getcwd(), raw_input)
+            if export_path[-4] != ".pdf":
+                export_path += ".pdf"
+
+            self.app.export_requested(ExportRequested(export_path))
+        self.dismiss()
+
 
 class GitVisualizerApp(App):
     CSS_PATH = "styles.tcss"
 
     BINDINGS = [
         ("q", "quit", "Quit"),
-        ("t", "toggle_tab", "Toggle Tab")
-        ]
+        ("t", "toggle_tab", "Toggle Tab"),
+        ("x", "export_graphs", "Export Data"),
+    ]
 
     def __init__(self, repository: Repository):
         super().__init__()
@@ -105,7 +138,7 @@ class GitVisualizerApp(App):
                 yield details_plots_column
             with TabPane("Stats", id="StatsTab"):
                 yield plots
-        
+
         yield Footer()
 
     def on_mount(self) -> None:
@@ -137,7 +170,6 @@ class GitVisualizerApp(App):
         plot.plt.bar([], [])  # Initial empty bar chart
         plot.refresh()
 
-
     def on_tree_node_selected(self, event: Tree.NodeSelected) -> None:
         node: TreeNode = event.node
         branch = node.data
@@ -158,8 +190,12 @@ class GitVisualizerApp(App):
                 key=hash,
             )
 
-        self.setup_user_commit_plot(branch.user_commits.keys(), branch.user_commits.values())
-        self.setup_time_series_plot(list(branch.day_commits.keys()), list(branch.day_commits.values()))
+        self.setup_user_commit_plot(
+            branch.user_commits.keys(), branch.user_commits.values()
+        )
+        self.setup_time_series_plot(
+            list(branch.day_commits.keys()), list(branch.day_commits.values())
+        )
         self.setup_added_delete_plot()
 
     def setup_added_delete_plot(self):
@@ -171,15 +207,17 @@ class GitVisualizerApp(App):
         plot = self.query_one("#time_series_plot")
         plt = plot.plt
         plt.clear_data()
-        #plt.data_form = "%d/%m/%Y"
-        #plt.plot(labels, values, marker="dot")
+        # plt.data_form = "%d/%m/%Y"
+        # plt.plot(labels, values, marker="dot")
 
         num_points = len(values)
         if num_points == 0:
             plot.refresh()
             return
 
-        x = list(range(num_points)) # Cant use labels directly due to a issue in the textualize package
+        x = list(
+            range(num_points)
+        )  # Cant use labels directly due to a issue in the textualize package
         plt.plot(x, values, marker="dot", color="cyan")
         ticks = min(10, num_points)
 
@@ -258,14 +296,22 @@ class GitVisualizerApp(App):
     def action_toggle_tab(self) -> None:
         """An action to the activated tab."""
         content = self.query_one(TabbedContent)
-        if content.active == None:
+        if content.active is None:
             return
         elif content.active == "CommitsTab":
             content.active = "StatsTab"
         elif content.active == "StatsTab":
             content.active = "CommitsTab"
-        
 
+    def action_export_graphs(self) -> None:
+        """Öffnet das Export-Dialogfenster."""
+        self.push_screen(ExportDialog())
+
+    def export_requested(self, event: ExportRequested) -> None:
+        print("[INFO] Export event received!")  # zum Testen
+        filename = event.filename
+        create_dashboard_pdf(self.repository, filename)
+        self.notify(f"Exported to {filename}", timeout=3)
 
 
 def node_exists_by_label(parent: TreeNode, label: str) -> bool:

@@ -15,6 +15,7 @@ from src.utils.naming_json_utils import load_name_config, get_name_by_mail
 from src.utils.user_commits import get_commits_per_user
 
 
+
 def main():
     parser = argparse.ArgumentParser(
         description="Git Repository Visualizer and Analyzer"
