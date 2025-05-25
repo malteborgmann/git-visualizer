@@ -18,6 +18,14 @@ from src.core.models import Repository, Branch
 from textual.widgets.tree import TreeNode
 
 
+MARKERS = {
+        "dot": "Dot",
+        "hd": "High Definition",
+        "fhd": "Higher Definition",
+        "braille": "Braille",
+        "sd": "Standard Definition",
+}
+
 class GitVisualizerApp(App):
     CSS_PATH = "styles.tcss"
 
@@ -117,8 +125,7 @@ class GitVisualizerApp(App):
 
         plot = self.query_one("#time_series_plot")
         plot.plt.title("Commits over Time")
-        plot.plt.xlabel("Date")
-        plot.plt.ylabel("Number of Commits")
+
         plot.plt.grid(True)
         plot.plt.bar([], [])  # Initial empty bar chart
         plot.refresh()
@@ -154,7 +161,7 @@ class GitVisualizerApp(App):
             )
 
         self.setup_user_commit_plot(branch.user_commits.keys(), branch.user_commits.values())
-        self.setup_time_series_plot(branch.day_commits.keys(), branch.day_commits.values())
+        self.setup_time_series_plot(list(branch.day_commits.keys()), list(branch.day_commits.values()))
 
     def setup_time_series_plot(self, labels=[], values=[]) -> None:
         """Erzeugt oder aktualisiert das Balkendiagramm mit neuen Daten."""
@@ -162,8 +169,24 @@ class GitVisualizerApp(App):
         plot = self.query_one("#time_series_plot")
         plt = plot.plt
         plt.clear_data()
-        # plt = self.query_one(PlotextPlot).plt             # löscht alte Daten
-        plt.plot(labels, values)
+        #plt.data_form = "%d/%m/%Y"
+        #plt.plot(labels, values, marker="dot")
+
+        num_points = len(values)
+        if num_points == 0:
+            plot.refresh()
+            return
+
+        x = list(range(num_points)) # Cant use labels directly due to a issue in the textualize package
+        plt.plot(x, values, marker="dot", color="cyan")
+        ticks = min(10, num_points)
+
+        positions = [int(i * (num_points - 1) / (ticks - 1)) for i in range(ticks)]
+        tick_labels = [labels[i] for i in positions]
+        plt.xticks(positions, tick_labels)
+
+        # TODO: Einbauen, dass Y-Achsen keine Floats sind
+
         plot.refresh()
 
     def setup_user_commit_plot(self, labels: list[str], values: list[int]) -> None:

@@ -33,6 +33,17 @@ Screen {
     */
 }
 
+#plot_user_commits {
+    height: 50%;
+}
+
+#time_series_plot {
+    height: 50%;
+    border: solid green;
+    padding: 1 2;
+    color: green;
+}
+
 /* Statistik-Header */
 #stats_header {
     height: auto;
