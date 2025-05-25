@@ -1,5 +1,15 @@
 from textual.app import App, ComposeResult
-from textual.widgets import Tree, LoadingIndicator, Static, DataTable, Label, TextArea, Tabs, TabbedContent, TabPane
+from textual.widgets import (
+    Tree,
+    LoadingIndicator,
+    Static,
+    DataTable,
+    Label,
+    TextArea,
+    Tabs,
+    TabbedContent,
+    TabPane,
+)
 from textual.scroll_view import ScrollView
 from textual.containers import Vertical, ScrollableContainer, VerticalScroll
 from textual_plotext import PlotextPlot
@@ -19,7 +29,6 @@ class GitVisualizerApp(App):
         self.current_branch: Branch = None
 
     def compose(self) -> ComposeResult:
-
         # ==========================
         # BRANCH TREE AND STATS
         # ==========================
@@ -38,7 +47,10 @@ class GitVisualizerApp(App):
             Static(f"📁 Files: {self.repository.total_files}", id="stat_files"),
             Static(f"📦 Ignored: {self.repository.ignored}", id="stat_ignored"),
             Static(f"📄 Lines of Code (LOC): {self.repository.loc}", id="stat_lines"),
-            Static(f"🪝 Hooks: {self.repository.hooks if self.repository.hooks else 'None'}",id="stat_hooks",),
+            Static(
+                f"🪝 Hooks: {self.repository.hooks if self.repository.hooks else 'None'}",
+                id="stat_hooks",
+            ),
             id="stats_header",
         )
 
@@ -65,17 +77,11 @@ class GitVisualizerApp(App):
         # ==========================
         # PLOTS AND Analytics
         # ==========================
-        
-
 
         plots = Vertical(
             PlotextPlot(id="plot", name="plotext_plot"),
             id="plots_column",
         )
-
-        
-
-
 
         # ==========================
         # TABS
@@ -86,9 +92,8 @@ class GitVisualizerApp(App):
             with TabPane("Stats", id="StatsTab"):
                 yield plots
 
-
     def on_mount(self) -> None:
-        #self.query_one(Tabs).focus()
+        # self.query_one(Tabs).focus()
         table = self.query_one(DataTable)
         table.add_columns(
             *(
@@ -112,7 +117,6 @@ class GitVisualizerApp(App):
             l.visible = True
         elif event.tab.id == "two":
             l.visible = False
-       
 
     def on_tree_node_selected(self, event: Tree.NodeSelected) -> None:
         node: TreeNode = event.node
@@ -199,7 +203,6 @@ class GitVisualizerApp(App):
             category_node = parent.add(str(category))
             category_node.expand()
             category_node.add_leaf(branch_name, branch)
-
 
 
 def node_exists_by_label(parent: TreeNode, label: str) -> bool:
