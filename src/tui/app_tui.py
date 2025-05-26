@@ -202,7 +202,6 @@ class GitVisualizerApp(App):
 
     def setup_time_series_plot(self, labels=[], values=[]) -> None:
         """Erzeugt oder aktualisiert das Balkendiagramm mit neuen Daten."""
-
         plot = self.query_one("#time_series_plot", PlotextPlot)
         plt = plot.plt
         plt.clear_data()
@@ -230,7 +229,6 @@ class GitVisualizerApp(App):
 
     def setup_user_commit_plot(self, labels: list[str], values: list[int]) -> None:
         """Erzeugt oder aktualisiert das Balkendiagramm mit neuen Daten."""
-
         plot = self.query_one("#plot_user_commits", PlotextPlot)
         plt = plot.plt
         plt.clear_data()

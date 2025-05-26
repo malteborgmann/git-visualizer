@@ -34,6 +34,7 @@ def load_branch_config(path):
 def classify_branch(branch_name: str, config: dict) -> str | None:
     """
     Classify a branch based on its name using the provided configuration.
+
     Args:
         branch_name (str): The name of the branch to classify.
         config (dict): A dictionary containing the branch classification configuration.

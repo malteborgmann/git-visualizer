@@ -1,7 +1,8 @@
 """
-This is the main module for export package. Orchestrates the export to PDF files and is the main entry point
+This is the main module for export package. Orchestrates the export to PDF files and is the main entry
 
 """
+
 # TODO: Auslagern in mehrere Funktionen, damit es cleaner ist
 from datetime import datetime, timedelta
 
@@ -15,14 +16,14 @@ from src.core.models import Branch
 
 
 def create_dashboard_pdf(branch: Branch, filepath: str) -> None:
-    """Generates graphics with Matplotlib and saves them into an PDF file. 
+    """Generates graphics with Matplotlib and saves them into an PDF file.
     Takes a Branch object as input and extract the necessary information
 
     Args:
         branch (Branch): This is the Branch-Object, that contains all the information about Commits and Users.
         filepath (str): Filepath to export the PDF to.
     """
-    
+
     with PdfPages(filepath) as pdf:
         # --------- Commits pro User ---------
         if branch.user_commits:

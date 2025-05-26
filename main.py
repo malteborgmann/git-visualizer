@@ -92,7 +92,7 @@ def main():
             )
             # print(f"Branch: {branch.name}, User Commits: {branch.user_commits.keys()}")
 
-        day_format =  "%d/%m/%Y"  # Format for the day keys in day_commits
+        day_format = "%d/%m/%Y"  # Format for the day keys in day_commits
         for branch in repository_data.branches.values():
             branch.day_commits = {}
             for commit in branch.commits.values():
@@ -100,7 +100,7 @@ def main():
                 if day not in branch.day_commits:
                     branch.day_commits[day] = 0
                 branch.day_commits[day] += 1
-            
+
             first_day = datetime.strptime(min(branch.day_commits.keys()), day_format)
             last_day = datetime.strptime(max(branch.day_commits.keys()), day_format)
 
@@ -112,12 +112,13 @@ def main():
                 current_day += timedelta(days=1)
 
             branch.day_commits = dict(
-                sorted(branch.day_commits.items(), key=lambda x: datetime.strptime(x[0], day_format))
+                sorted(
+                    branch.day_commits.items(),
+                    key=lambda x: datetime.strptime(x[0], day_format),
+                )
             )
 
-            print(
-                f"Branch: {branch.name}, Day Commits: {branch.day_commits.keys()}"
-            )
+            print(f"Branch: {branch.name}, Day Commits: {branch.day_commits.keys()}")
 
         print("\nQueried Repository")
         print(f"Path: {repository_data.path}")
@@ -134,8 +135,6 @@ def main():
                     f"    Commit: {commit_hash} by {commit.author_name} on {commit.date}"
                 )
             break
-            
-        
 
         app = GitVisualizerApp(repository=repository_data)
         app.run()
