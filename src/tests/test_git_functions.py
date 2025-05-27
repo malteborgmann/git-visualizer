@@ -20,8 +20,7 @@ from src.core.models import Branch, Repository
 
 @pytest.fixture
 def git_repo(tmp_path):
-    """
-    Erstellt ein temporäres Git-Repository mit:
+    """Erstellt ein temporäres Git-Repository mit:
     - main branch
     - feature/test branch
     - .gitignore und ignorierter Datei
@@ -33,10 +32,10 @@ def git_repo(tmp_path):
 
     subprocess.run(["git", "init"], cwd=repo_path, check=True)
     subprocess.run(
-        ["git", "config", "user.name", "Test User"], cwd=repo_path, check=True
+        ["git", "config", "user.name", "Test User"], cwd=repo_path, check=True,
     )
     subprocess.run(
-        ["git", "config", "user.email", "test@example.com"], cwd=repo_path, check=True
+        ["git", "config", "user.email", "test@example.com"], cwd=repo_path, check=True,
     )
     subprocess.run(
         ["git", "symbolic-ref", "HEAD", "refs/heads/main"],

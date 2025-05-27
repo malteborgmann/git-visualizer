@@ -5,8 +5,7 @@ from src.core.git_command_runner import run_git_command
 
 
 def _get_ignored_paths(repo_path: str) -> List[str]:
-    """
-    Liefert alle Dateien/Verzeichnisse zurück, die laut .gitignore ignoriert werden.
+    """Liefert alle Dateien/Verzeichnisse zurück, die laut .gitignore ignoriert werden.
     """
     output = run_git_command(
         ["ls-files", "--others", "--ignored", "--exclude-standard", "--directory"],
@@ -17,8 +16,7 @@ def _get_ignored_paths(repo_path: str) -> List[str]:
 
 
 def _get_hooks(repo_path: str) -> List[str]:
-    """
-    Listet alle Hook-Skripte im .git/hooks-Verzeichnis (ohne .sample-Dateien).
+    """Listet alle Hook-Skripte im .git/hooks-Verzeichnis (ohne .sample-Dateien).
     """
     hooks_dir = os.path.join(repo_path, ".git", "hooks")
     if not os.path.isdir(hooks_dir):
@@ -34,8 +32,7 @@ def _get_hooks(repo_path: str) -> List[str]:
 
 
 def _count_lines_of_code(repo_path: str) -> int:
-    """
-    Zählt die Gesamtzahl der Zeilen in allen getrackten Dateien des Repos.
+    """Zählt die Gesamtzahl der Zeilen in allen getrackten Dateien des Repos.
     """
     # Alle getrackten Dateien per git ls-files
     output = run_git_command(["ls-files"], repo_path)
@@ -52,8 +49,7 @@ def _count_lines_of_code(repo_path: str) -> int:
 
 
 def get_repo_stats(repo_path: str) -> Tuple[int, int, int, List[str]]:
-    """
-    Liefert ein Tupel (total_files, ignored_count, loc, hooks_list).
+    """Liefert ein Tupel (total_files, ignored_count, loc, hooks_list).
     """
     # Gesamtzahl der getrackten Dateien
     files = run_git_command(["ls-files"], repo_path).splitlines()

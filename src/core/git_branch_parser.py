@@ -9,14 +9,14 @@ def _get_default_branch(repo_path: str) -> str:
     try:
         # Versuche zuerst den Default-Branch vom Remote zu bekommen
         default_branch = run_git_command(
-            ["symbolic-ref", "refs/remotes/origin/HEAD"], repo_path
+            ["symbolic-ref", "refs/remotes/origin/HEAD"], repo_path,
         )
         return default_branch.replace("refs/remotes/origin/", "")
     except (RuntimeError, ValueError):
         try:
             # Fallback: Versuche den Default-Branch lokal zu finden
             default_branch = run_git_command(
-                ["rev-parse", "--abbrev-ref", "HEAD"], repo_path
+                ["rev-parse", "--abbrev-ref", "HEAD"], repo_path,
             )
             return default_branch
         except (RuntimeError, ValueError):

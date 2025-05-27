@@ -1,3 +1,7 @@
+matplotlib==3.10.3
+numpy==2.2.6
+pandas==2.2.3
+pytest==8.2.0
 pytest==8.3.5
 textual==3.2.0
 textual_plotext==1.0.1

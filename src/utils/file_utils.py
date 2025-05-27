@@ -46,15 +46,3 @@ def is_valid_git_repo(path: str) -> bool:
     except subprocess.CalledProcessError:
         # The command failed, which can happen in a non-repo directory
         return False
-
-
-def export_to_markdown(data, output_file: str):
-    """Placeholder for Markdown export."""
-    # TODO: Implement Markdown export
-    print(f"Data would be exported to {output_file} as Markdown (not yet implemented).")
-
-
-def export_to_csv(data, output_file: str):
-    """Placeholder for CSV export."""
-    # TODO: Implement CSV export
-    print(f"Data would be exported to {output_file} as CSV (not yet implemented).")

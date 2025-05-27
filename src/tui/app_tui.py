@@ -70,7 +70,7 @@ class GitVisualizerApp(App):
     def __init__(self, repository: Repository):
         super().__init__()
         self.repository = repository
-        self.current_branch: Branch
+        self.current_branch: Branch = None
 
     def compose(self) -> ComposeResult:
         # ==========================
@@ -87,12 +87,14 @@ class GitVisualizerApp(App):
 
         self.setup_tree_branches(locals, remotes)
 
+        self.notify(timeout=3, message=f"{' '.join(self.repository.hooks)} loaded")
+
         stats = Vertical(
             Static(f"📁 Files: {self.repository.total_files}", id="stat_files"),
             Static(f"📦 Ignored: {self.repository.ignored}", id="stat_ignored"),
             Static(f"📄 Lines of Code (LOC): {self.repository.loc}", id="stat_lines"),
             Static(
-                f"🪝 Hooks: {self.repository.hooks if self.repository.hooks else 'None'}",
+                f"🪝 Hooks: {'None'}",
                 id="stat_hooks",
             ),
             id="stats_header",
@@ -150,7 +152,7 @@ class GitVisualizerApp(App):
                 "Email",
                 "Date",
                 "Message",
-            )
+            ),
         )
 
         # TODO:
@@ -190,10 +192,10 @@ class GitVisualizerApp(App):
             )
 
         self.setup_user_commit_plot(
-            list(branch.user_commits.keys()), list(branch.user_commits.values())
+            list(branch.user_commits.keys()), list(branch.user_commits.values()),
         )
         self.setup_time_series_plot(
-            list(branch.day_commits.keys()), list(branch.day_commits.values())
+            list(branch.day_commits.keys()), list(branch.day_commits.values()),
         )
         self.setup_added_delete_plot()
 
@@ -214,7 +216,7 @@ class GitVisualizerApp(App):
             return
 
         x = list(
-            range(num_points)
+            range(num_points),
         )  # Cant use labels directly due to a issue in the textualize package
         plt.plot(x, values, color="cyan")
         ticks = min(10, num_points)
@@ -237,8 +239,7 @@ class GitVisualizerApp(App):
         plot.refresh()
 
     def on_data_table_row_highlighted(self, event) -> None:
-        """
-        Wird aufgerufen, wenn man in der Tabelle eine Zeile markiert.
+        """Wird aufgerufen, wenn man in der Tabelle eine Zeile markiert.
         """
         if self.current_branch is None:
             return
@@ -263,7 +264,7 @@ class GitVisualizerApp(App):
             f"[b]Added:[/b] {added}\n"
             f"[b]Deleted:[/b] {deleted}\n"
             f"[b]Changed files:[/b]\n"
-            + ("\n".join(f"- {f.path}" for f in changed) or "–")
+            + ("\n".join(f"- {f.path}" for f in changed) or "–"),
         )
 
     def setup_tree_branches(self, locals, remotes):
@@ -295,7 +296,7 @@ class GitVisualizerApp(App):
         content = self.query_one(TabbedContent)
         if content.active is None:
             return
-        elif content.active == "CommitsTab":
+        if content.active == "CommitsTab":
             content.active = "StatsTab"
         elif content.active == "StatsTab":
             content.active = "CommitsTab"

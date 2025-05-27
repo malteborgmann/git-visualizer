@@ -15,7 +15,7 @@ def run_git_command(command: List[str], repo_path: str) -> str:
         return result.stdout.strip()
     except FileNotFoundError:
         raise RuntimeError(
-            "Git command not found. Please ensure Git is installed and in your PATH."
+            "Git command not found. Please ensure Git is installed and in your PATH.",
         )
     except subprocess.CalledProcessError as e:
         error_message = f"Git command failed with error: {e.stderr.strip()}"
@@ -54,6 +54,6 @@ def run_git_command(command: List[str], repo_path: str) -> str:
             except subprocess.CalledProcessError as e2:
                 error_message = f"Git command failed: {e.stderr.strip()}. Secondary attempt failed: {e2.stderr.strip()}"
                 raise ValueError(
-                    f"The path '{repo_path}' is not a valid Git repository or cannot be accessed. Error: {error_message}"
+                    f"The path '{repo_path}' is not a valid Git repository or cannot be accessed. Error: {error_message}",
                 )
         raise RuntimeError(error_message)
