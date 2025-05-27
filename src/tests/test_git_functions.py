@@ -125,5 +125,5 @@ def test_load_repository_data(git_repo):
 def test_run_git_command_failure(tmp_path):
     fake_path = tmp_path / "not_a_repo"
     fake_path.mkdir()
-    with pytest.raises(ValueError):
+    with pytest.raises(RuntimeError):
         run_git_command(["status"], str(fake_path))
