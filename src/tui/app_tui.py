@@ -94,7 +94,7 @@ class GitVisualizerApp(App):
             Static(f"📦 Ignored: {self.repository.ignored}", id="stat_ignored"),
             Static(f"📄 Lines of Code (LOC): {self.repository.loc}", id="stat_lines"),
             Static(
-                f"🪝 Hooks: {'None'}",
+                f"🪝 Hooks: {' '.join(self.repository.hooks) if self.repository.hooks else 'None'}",
                 id="stat_hooks",
             ),
             id="stats_header",
