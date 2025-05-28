@@ -1,26 +1,95 @@
-/* styles.tcss */
 Screen {
-    /* 3 Spalten: Branch-Tree, Commit-Tabelle, Detail-Panel */
-    layout: grid;
-    grid-size: 3;
-    grid-columns: 20% 40% 40%;
-    grid-rows: auto;
+    layout: horizontal;
 }
 
-#branch_tree {
-    /* Tree links */
-    width: 100%;
-}
-
-#data_table {
-    /* Tabelle in der Mitte */
-    width: 100%;
-}
-
-#details {
-    /* Detail-Panel rechts */
-    border: solid blue;
-    padding: 1;
-    overflow: auto;
+/* Linke Spalte */
+#left_column {
+    width: 20%;
     height: 100%;
+    layout: vertical;
+    border: solid grey;
+    padding: 1;
+    dock: left;
 }
+
+/* Tabelle */
+#data_table {
+    height:50%;
+    border: solid green;
+}
+
+/* Commit-Details */
+#details {
+    height: 50%;
+    border: solid blue;
+    overflow: auto;
+}
+
+#plot {
+    /* 
+    height: 50%;
+    dock: bottom;
+    border: solid red; 
+    */
+}
+
+#plot_user_commits {
+    height: 50%;
+}
+
+#time_series_plot {
+    height: 50%;
+    border: solid green;
+    padding: 1 2;
+    color: green;
+}
+
+/* Statistik-Header */
+#stats_header {
+    height: auto;
+    padding-top: 1;
+    border-top: solid grey;
+    color: yellow;
+    content-align: left middle;
+}
+
+TabPane {
+    align-horizontal: center;
+}
+
+TabbedContent Tab {
+    align-horizontal: center;
+    text-align: center;
+    width: 50%;
+}
+
+ModalScreen {
+  align: center middle;
+}
+#export_modal {
+  layout: vertical;
+  align: center middle;
+  content-align: center middle;
+  padding: 2 4;
+  background: $panel;
+  border: heavy $accent;
+  width: 60%;
+}
+
+#export_prompt {
+  content-align: center middle;
+  padding-bottom: 1;
+}
+
+#export_filename {
+  width: 100%;
+  color: white;
+  background: #1e1e1e;
+  border: solid $accent;
+}
+
+#export_buttons {
+  content-align: center middle;
+  layout: horizontal;
+  align: center middle;
+}   

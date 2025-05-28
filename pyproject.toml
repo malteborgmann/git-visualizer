@@ -1,0 +1,45 @@
+[tool.ruff]
+exclude = [
+    ".bzr", ".direnv", ".eggs", ".git", ".git-rewrite", ".hg", ".ipynb_checkpoints",
+    ".mypy_cache", ".nox", ".pants.d", ".pyenv", ".pytest_cache", ".pytype",
+    ".ruff_cache", ".svn", ".tox", ".venv", ".vscode", "__pypackages__", "_build",
+    "buck-out", "build", "dist", "node_modules", "site-packages", "venv",
+    "Homework 2/src"
+]
+line-length = 100
+indent-width = 4
+target-version = "py39"
+
+# Aktiviere ALLES, aber gezielt Docstring und andere Linterbereiche
+extend-select = ["ALL"]
+
+# Nur Google-konfliktige Docstring-Regeln werden ignoriert
+extend-ignore = [
+    "D212",
+    "D213",  # Multi-line docstring summary should start at the second line (Google conflict)
+    "F401",  # imported but unused
+    "F403",  # 'from module import *' used; unable to detect undefined names
+    "F405",  # name may be undefined or defined from star imports
+    "TC003", # Move into the type-checking block
+    "PTH123",# open() should be replaces by Path.open()
+    "PD901", # Too gernal names for pandas dataframe
+    "DTZ007",# datetime without %z
+]
+
+[tool.ruff.lint]
+fixable = ["ALL"]
+unfixable = []
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+docstring-code-format = false
+docstring-code-line-length = "dynamic"
+
+[tool.ruff.lint.isort]
+from-first = true
+known-first-party = ["src"]
+length-sort = false
