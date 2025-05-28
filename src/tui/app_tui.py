@@ -129,7 +129,7 @@ class GitVisualizerApp(App):
         """"""
         node: TreeNode = event.node
 
-        if not node.data: # Necessary for categories
+        if not node.data:  # Necessary for categories
             return
 
         self.current_branch = node.data
