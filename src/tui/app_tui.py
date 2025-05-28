@@ -9,6 +9,7 @@ from textual.widgets import (
     Tree,
 )
 from textual.widgets.tree import TreeNode
+from textual_plotext import PlotextPlot
 
 from src.core.models import Branch, Repository
 from src.export.export_pdf_dashboard import create_dashboard_pdf
@@ -128,7 +129,7 @@ class GitVisualizerApp(App):
         """"""
         node: TreeNode = event.node
 
-        if not node.data:  # Necessary for categories
+        if not node.data: # Necessary for categories
             return
 
         self.current_branch = node.data
