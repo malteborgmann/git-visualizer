@@ -30,9 +30,10 @@ class ExportRequestMessage(Message):
 
 
 class ExportDialog(ModalScreen):
-    """Modal für Dateinamen-Eingabe beim Export."""
+    """ModalScreen for entering the Filename for the new PDF."""
 
-    def compose(self):
+    def compose(self):  # noqa: ANN201
+        """Create the Widgets on the ModelScreen."""
         with Container(id="export_modal"):
             yield Static("Enter export filename:", id="export_prompt")
             yield Input(placeholder="branches_report.pdf", id="export_filename")
@@ -41,20 +42,21 @@ class ExportDialog(ModalScreen):
                 yield Button("OK", id="export_ok")
                 yield Button("Cancel", id="export_cancel")
 
-    def on_mount(self):
+    def on_mount(self) -> None:
+        """Set focus the input field on mount."""
         input_field = self.query_one("#export_filename", Input)
         self.set_focus(input_field)
 
-    def on_button_pressed(self, event: Button.Pressed):
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        """Action when OK Button is pressed."""  # noqa: D401
         if event.button.id == "export_ok":
             raw_input = (
-                self.query_one("#export_filename", Input).value.strip()
-                or "branches_report.pdf"
+                self.query_one("#export_filename", Input).value.strip() or "branches_report.pdf"
             )
 
             export_path = Path.cwd() / raw_input
             if export_path.suffix != ".pdf":
                 export_path = export_path.with_suffix(".pdf")
 
-            self.app.export_requested(ExportRequestMessage(export_path))  # type: ignore
+            self.app.on_export_requested(ExportRequestMessage(export_path))
         self.dismiss()
