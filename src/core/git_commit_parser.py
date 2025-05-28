@@ -56,7 +56,7 @@ def _get_commit_data(repo_path: str) -> dict[str, Commit]:
     Extract all commits from the Git repository and return structured commit data.
 
     This function uses `git log --all` with a custom pretty format to retrieve a detailed
-    log of all commits, including metadata (author, date, message, parents) and changed files
+    log of all commits, including metadata (author, date, message) and changed files
     via `--numstat`. Each commit is parsed and stored in a Commit object.
 
     It handles commits across all branches, skipping malformed entries. For each commit,
@@ -86,7 +86,7 @@ def _get_commit_data(repo_path: str) -> dict[str, Commit]:
     commit_separator = "<GIT_COMMIT_SEPARATOR>"
     field_separator = "<FIELD_SEP>"
 
-    log_format = f"%H{field_separator}%an{field_separator}%ae{field_separator}%ct{field_separator}%B{field_separator}%P"
+    log_format = f"%H{field_separator}%an{field_separator}%ae{field_separator}%ct{field_separator}%B"
 
     raw_log_output = run_git_command(
         ["log", "--all", f"--pretty=format:{log_format}{commit_separator}"],
@@ -111,7 +111,7 @@ def _get_commit_data(repo_path: str) -> dict[str, Commit]:
         # 6. Parent
 
         parts = raw_commit_entry.strip().split(field_separator)
-        if len(parts) != 6:
+        if len(parts) != 5:
             continue
 
         (
@@ -120,7 +120,7 @@ def _get_commit_data(repo_path: str) -> dict[str, Commit]:
             author_email,
             committer_timestamp_str,
             message,
-            parent_hashes_str,
+            #parent_hashes_str,
         ) = parts
 
         # Get numstat for this specific commit
@@ -177,8 +177,6 @@ def _get_commit_data(repo_path: str) -> dict[str, Commit]:
             # Fallback: set to Unix epoch start time (1970-01-01 00:00:00 UTC)
             commit_date = datetime(1970, 1, 1, tzinfo=timezone.utc)
 
-        # TODO: remove it since its not needed anymore - Never used parents other than I thought
-        parents = parent_hashes_str.split() if parent_hashes_str else []
 
         commits_data[commit_hash] = Commit(
             hash=commit_hash,
@@ -188,7 +186,6 @@ def _get_commit_data(repo_path: str) -> dict[str, Commit]:
             message=message.strip(),
             lines_added=lines_added,
             lines_deleted=lines_deleted,
-            parents=parents,
             changed_files=changed_files,
         )  # Hash: Commit-Object
 

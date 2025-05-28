@@ -45,7 +45,6 @@ class Commit:
         message (str): The commit message.
         lines_added (int): Total lines added in the commit.
         lines_deleted (int): Total lines deleted in the commit.
-        parents (List[str]): List of parent commit hashes (for merges).
         changed_files (List[ChangedFile]): List of files modified in the commit.
 
     """
@@ -57,7 +56,6 @@ class Commit:
     message: str
     lines_added: int
     lines_deleted: int
-    parents: list[str]
     changed_files: list[ChangedFile] = field(default_factory=list)
 
 
@@ -113,7 +111,6 @@ class Repository:
     hooks: list[str] = field(default_factory=list)
 
     def get_default_branch(self) -> Branch | None:
-        # TODO: Das hier evtl umändern und den default Branch als Attribut hier speichern
         """
         Return the default branch, if one is marked.
 
