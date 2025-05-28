@@ -10,6 +10,7 @@ Functions:
     classify_branch(branch_name, config): Classify a branch name based on regex rules.
 
 """
+
 from __future__ import annotations
 
 from pathlib import Path

@@ -5,6 +5,7 @@ This module provides a single entry point for parsing and aggregating all
 repository data—commits, branches, statistics, and hooks—into a unified
 Repository object used throughout the application.
 """
+
 from src.core.git_branch_parser import parse_branches
 from src.core.git_commit_parser import parse_commits
 from src.core.git_stats import get_repo_stats

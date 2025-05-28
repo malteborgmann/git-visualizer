@@ -17,7 +17,7 @@ from pathlib import Path
 import json
 
 
-def load_name_config(path: str | Path ) -> dict:
+def load_name_config(path: str | Path) -> dict:
     """Load the name configuration from a JSON file.
 
     Args:

@@ -3,6 +3,7 @@
 Parses arguments, validates the repo and config files, collects metadata,
 and starts the TUI visualizer.
 """
+
 from __future__ import annotations
 
 from argparse import Namespace
@@ -38,8 +39,9 @@ def parse_args() -> Namespace:
     return parser.parse_args()
 
 
-def validate_paths(repo_path: Path, branch_config_path: Path | None, branch_names_path: Path | None) \
-        -> None:
+def validate_paths(
+    repo_path: Path, branch_config_path: Path | None, branch_names_path: Path | None
+) -> None:
     """
     Validate required file system paths for the Git repository and optional configuration files.
 
@@ -130,7 +132,9 @@ def compute_day_commit_stats(repo):
             day_counts.setdefault(day, 0)
             current += timedelta(days=1)
 
-        branch.day_commits = dict(sorted(day_counts.items(), key=lambda x: datetime.strptime(x[0], fmt)))
+        branch.day_commits = dict(
+            sorted(day_counts.items(), key=lambda x: datetime.strptime(x[0], fmt))
+        )
 
 
 def main():

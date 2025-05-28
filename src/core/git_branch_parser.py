@@ -9,21 +9,25 @@ def _get_default_branch(repo_path: str) -> str:
     try:
         # Versuche zuerst den Default-Branch vom Remote zu bekommen
         default_branch = run_git_command(
-            ["symbolic-ref", "refs/remotes/origin/HEAD"], repo_path,
+            ["symbolic-ref", "refs/remotes/origin/HEAD"],
+            repo_path,
         )
         return default_branch.replace("refs/remotes/origin/", "")
     except (RuntimeError, ValueError):
         try:
             # Fallback: Versuche den Default-Branch lokal zu finden
             default_branch = run_git_command(
-                ["rev-parse", "--abbrev-ref", "HEAD"], repo_path,
+                ["rev-parse", "--abbrev-ref", "HEAD"],
+                repo_path,
             )
             return default_branch
         except (RuntimeError, ValueError):
             return "main"  # Fallback auf "main" wenn nichts anderes gefunden wird
 
 
-def parse_branches(repo_path: str, commits_data: dict[str, Commit], branch_commits: dict[str, list[str]]) -> dict[str, Branch]: #  # noqa: E501
+def parse_branches(
+    repo_path: str, commits_data: dict[str, Commit], branch_commits: dict[str, list[str]]
+) -> dict[str, Branch]:  #  # noqa: E501
     """Parse all local and remote branches and assigns commits to them."""
     branches_data: dict[str, Branch] = {}
     default_branch_name = _get_default_branch(repo_path)

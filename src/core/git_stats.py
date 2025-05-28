@@ -24,7 +24,7 @@ def _get_ignored_paths(repo_path: str) -> list[str]:
         ["ls-files", "--others", "--ignored", "--exclude-standard", "--directory"],
         repo_path,
     )
-    return [line for line in output.splitlines() if line.strip()] # Do not add empty lines
+    return [line for line in output.splitlines() if line.strip()]  # Do not add empty lines
 
 
 def _get_hooks(repo_path: str) -> list[str]:
