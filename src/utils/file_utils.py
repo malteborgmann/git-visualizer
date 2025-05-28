@@ -1,60 +1,17 @@
-import os
-import subprocess
+from src.core.git_command_runner import run_git_command
 
 
 def is_valid_git_repo(path: str) -> bool:
     """Checks if the given path is a valid Git repository."""
-    git_dir = os.path.join(path, ".git")
-    if not os.path.isdir(git_dir):
-        if os.path.basename(path) == ".git" and os.path.isdir(path):
-            pass  # TODO: Implement later
-        elif not os.path.isdir(git_dir):
-            return False
 
     try:
-        check_is_work_tree = subprocess.run(
-            ["git", "-C", path, "rev-parse", "--is-inside-work-tree"],
-            check=False,  # Do not throw an error here directly
-            capture_output=True,
-            text=True,
-            encoding="utf-8",
-        )
-        is_work_tree = (
-            check_is_work_tree.returncode == 0
-            and check_is_work_tree.stdout.strip() == "true"
-        )
+        check_for_work_tree = run_git_command(["rev-parse", "--is-inside-work-tree"], path)
 
-        if is_work_tree:
+        if check_for_work_tree == "true":
             return True
 
-        check_is_bare = subprocess.run(
-            ["git", "-C", path, "rev-parse", "--is-bare-repository"],
-            check=False,
-            capture_output=True,
-            text=True,
-            encoding="utf-8",
-        )
-        is_bare = (
-            check_is_bare.returncode == 0 and check_is_bare.stdout.strip() == "true"
-        )
+        check_for_bare_repo = run_git_command(["rev-parse", "--is-bare-repository"], path)
 
-        return is_bare
-
-    except FileNotFoundError:
-        # Git is not installed or not in PATH
+        return check_for_bare_repo == "true"
+    except RuntimeError:
         return False
-    except subprocess.CalledProcessError:
-        # The command failed, which can happen in a non-repo directory
-        return False
-
-
-def export_to_markdown(data, output_file: str):
-    """Placeholder for Markdown export."""
-    # TODO: Implement Markdown export
-    print(f"Data would be exported to {output_file} as Markdown (not yet implemented).")
-
-
-def export_to_csv(data, output_file: str):
-    """Placeholder for CSV export."""
-    # TODO: Implement CSV export
-    print(f"Data would be exported to {output_file} as CSV (not yet implemented).")

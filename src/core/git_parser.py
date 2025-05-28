@@ -1,15 +1,32 @@
-from datetime import datetime, timezone
-from typing import Dict, List, Tuple
-import subprocess
+"""
+Git repository loader.
+
+This module provides a single entry point for parsing and aggregating all
+repository data—commits, branches, statistics, and hooks—into a unified
+Repository object used throughout the application.
+"""
 
 from src.core.git_branch_parser import parse_branches
 from src.core.git_commit_parser import parse_commits
 from src.core.git_stats import get_repo_stats
-from src.core.models import Branch, ChangedFile, Commit, Repository
+from src.core.models import Repository
 
 
 def load_repository_data(repo_path: str) -> Repository:
-    """Loads all relevant data from the Git repository."""
+    """
+    Load all Git repository data into a Repository object.
+
+    This function collects commits, branch mappings, repository statistics, and hook information
+    for a given Git repository path. It uses helper functions to parse commits and branches
+    and compute repository-level statistics.
+
+    Args:
+        repo_path (str): The path to the root directory of the Git repository.
+
+    Returns:
+        Repository: A fully constructed Repository object containing all parsed metadata.
+
+    """
     commits_data, branch_commits = parse_commits(repo_path)
     branches = parse_branches(repo_path, commits_data, branch_commits)
 

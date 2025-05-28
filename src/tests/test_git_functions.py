@@ -20,8 +20,7 @@ from src.core.models import Branch, Repository
 
 @pytest.fixture
 def git_repo(tmp_path):
-    """
-    Erstellt ein temporäres Git-Repository mit:
+    """Erstellt ein temporäres Git-Repository mit:
     - main branch
     - feature/test branch
     - .gitignore und ignorierter Datei
@@ -33,10 +32,14 @@ def git_repo(tmp_path):
 
     subprocess.run(["git", "init"], cwd=repo_path, check=True)
     subprocess.run(
-        ["git", "config", "user.name", "Test User"], cwd=repo_path, check=True
+        ["git", "config", "user.name", "Test User"],
+        cwd=repo_path,
+        check=True,
     )
     subprocess.run(
-        ["git", "config", "user.email", "test@example.com"], cwd=repo_path, check=True
+        ["git", "config", "user.email", "test@example.com"],
+        cwd=repo_path,
+        check=True,
     )
     subprocess.run(
         ["git", "symbolic-ref", "HEAD", "refs/heads/main"],
@@ -126,5 +129,5 @@ def test_load_repository_data(git_repo):
 def test_run_git_command_failure(tmp_path):
     fake_path = tmp_path / "not_a_repo"
     fake_path.mkdir()
-    with pytest.raises(ValueError):
+    with pytest.raises(RuntimeError):
         run_git_command(["status"], str(fake_path))

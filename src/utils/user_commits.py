@@ -1,11 +1,23 @@
-from typing import Dict
+"""
+Commit statistics utilities for Git branches.
 
-from src.core.models import Branch, Commit
+Provides helper function for analyzing commit activity
+Counts commits per user for a given Git branch.
+"""
+
+from src.core.models import Branch
 
 
-def get_commits_per_user(branch: Branch) -> Dict[str, int]:
+def get_commits_per_user(branch: Branch) -> dict[str, int]:
     """
-    Gibt die Anzahl der Commits pro User zurück.
+    Count the number of commits made by each user in a Git branch.
+
+    Args:
+        branch (Branch): A Branch object containing commit data.
+
+    Returns:
+        Dict[str, int]: A dictionary mapping user names to their number of commits.
+
     """
     user_commits = {}
     for commit in branch.commits.values():
