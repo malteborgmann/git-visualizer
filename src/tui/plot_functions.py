@@ -1,3 +1,5 @@
+# DEPRECATED
+# This code isnt used anymore
 from textual_plotext import PlotextPlot
 
 
