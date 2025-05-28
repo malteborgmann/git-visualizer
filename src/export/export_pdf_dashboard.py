@@ -84,10 +84,7 @@ def _plot_commit_heatmap(branch: Branch, pdf: PdfPages) -> None:
 
     df = pd.DataFrame(
         {
-            "Date": [
-                        datetime.strptime(d, "%d/%m/%Y")
-                        for d in branch.day_commits
-                    ],
+            "Date": [datetime.strptime(d, "%d/%m/%Y") for d in branch.day_commits],
             "Commits": list(branch.day_commits.values()),
         },
     )
@@ -104,7 +101,9 @@ def _plot_commit_heatmap(branch: Branch, pdf: PdfPages) -> None:
     df["Weekday"] = df["Date"].dt.weekday
 
     heatmap = df.pivot_table(
-        index="Weekday", columns="WeekStartStr", values="Commits",
+        index="Weekday",
+        columns="WeekStartStr",
+        values="Commits",
     ).reindex(index=range(7), fill_value=0)
 
     fig, ax = plt.subplots(figsize=(12, 4))
@@ -119,10 +118,7 @@ def _plot_commit_heatmap(branch: Branch, pdf: PdfPages) -> None:
     ax.set_yticklabels(["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"])
     ax.set_xticks(np.arange(heatmap.shape[1]))
     ax.set_xticklabels(
-        [
-            datetime.strptime(w, "%Y-%m-%d").strftime("%d.%m")
-            for w in heatmap.columns
-        ],
+        [datetime.strptime(w, "%Y-%m-%d").strftime("%d.%m") for w in heatmap.columns],
         rotation=45,
         ha="right",
     )

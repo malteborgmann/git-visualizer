@@ -6,6 +6,7 @@ branches, and repositories. It uses Python dataclasses to simplify object constr
 and comparison. These models serve as the core data structures for Git analysis
 and visualization tools.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field

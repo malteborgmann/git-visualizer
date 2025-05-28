@@ -32,10 +32,14 @@ def git_repo(tmp_path):
 
     subprocess.run(["git", "init"], cwd=repo_path, check=True)
     subprocess.run(
-        ["git", "config", "user.name", "Test User"], cwd=repo_path, check=True,
+        ["git", "config", "user.name", "Test User"],
+        cwd=repo_path,
+        check=True,
     )
     subprocess.run(
-        ["git", "config", "user.email", "test@example.com"], cwd=repo_path, check=True,
+        ["git", "config", "user.email", "test@example.com"],
+        cwd=repo_path,
+        check=True,
     )
     subprocess.run(
         ["git", "symbolic-ref", "HEAD", "refs/heads/main"],

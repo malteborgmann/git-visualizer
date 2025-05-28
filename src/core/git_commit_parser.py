@@ -46,9 +46,10 @@ def parse_commits(repo_path: str) -> (dict[str, Commit], dict[str, list[str]]):
     branch_commits = _get_branch_commits(repo_path)
 
     if not commits_data:
-        return {}, {} # Empty Repo
+        return {}, {}  # Empty Repo
 
     return commits_data, branch_commits
+
 
 def _get_commit_data(repo_path: str) -> dict[str, Commit]:
     """
@@ -92,7 +93,8 @@ def _get_commit_data(repo_path: str) -> dict[str, Commit]:
         repo_path,
     )
 
-    if not raw_log_output: return {} # Empty Repository
+    if not raw_log_output:
+        return {}  # Empty Repository
 
     raw_commits = raw_log_output.split(commit_separator)
 
@@ -214,15 +216,16 @@ def _get_branch_commits(repo_path: str) -> dict[str, list[str]]:
     ] = {}  # Maps branch names to lists of commit hashes
 
     for branch_name in run_git_command(
-        ["branch", "--all", "--format=%(refname:short)"], repo_path,
+        ["branch", "--all", "--format=%(refname:short)"],
+        repo_path,
     ).splitlines():
-
         branch_name = branch_name.strip()
         if not branch_name:
             continue
 
         branch_commits[branch_name] = run_git_command(
-            ["rev-list", branch_name], repo_path,
-        ).splitlines() # Branch-Name: list(commits)
+            ["rev-list", branch_name],
+            repo_path,
+        ).splitlines()  # Branch-Name: list(commits)
 
     return branch_commits

@@ -138,6 +138,9 @@ class GitVisualizerApp(App):
         """"""
         node: TreeNode = event.node
 
+        if not node.data: # Necessary for categories
+            return
+
         self.current_branch = node.data
         table = self.query_one("#data_table", DataTable)
         table.clear()
