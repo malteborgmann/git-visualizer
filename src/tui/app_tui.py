@@ -9,16 +9,12 @@ from textual.widgets import (
     Tree,
 )
 from textual.widgets.tree import TreeNode
-from textual_plotext import PlotextPlot
 
 from src.core.models import Branch, Repository
 from src.export.export_pdf_dashboard import create_dashboard_pdf
 from src.tui.export_dialog import ExportDialog, ExportRequestMessage
-from src.tui.plot_functions import (
-    refresh_time_series_plot,
-    refresh_user_commit_plot,
-    setup_plot_names,
-)
+from src.tui.plots.TimeSeriesPlot import TimeSeriesPlot
+from src.tui.plots.UserCommitPlot import UserCommitPlot
 
 
 class GitVisualizerApp(App):
@@ -93,8 +89,8 @@ class GitVisualizerApp(App):
         # ==========================
 
         plots = Vertical(
-            PlotextPlot(id="plot_user_commits"),
-            PlotextPlot(id="time_series_plot"),
+            UserCommitPlot(id="plot_user_commits"),
+            TimeSeriesPlot(id="time_series_plot"),
             id="plots_column",
         )
 
@@ -128,17 +124,11 @@ class GitVisualizerApp(App):
             ),
         )
 
-        plot = self.query_one("#plot_user_commits", PlotextPlot)
-        setup_plot_names(plot, "Commits per User", "User", "Number of Commits", "bar")
-
-        plot = self.query_one("#time_series_plot", PlotextPlot)
-        setup_plot_names(plot, "Commits over Time", "Time", "Number of Commits", "plot")
-
     def on_tree_node_selected(self, event: Tree.NodeSelected) -> None:
         """"""
         node: TreeNode = event.node
 
-        if not node.data: # Necessary for categories
+        if not node.data:  # Necessary for categories
             return
 
         self.current_branch = node.data
@@ -155,14 +145,13 @@ class GitVisualizerApp(App):
                 key=hash,
             )
 
-        refresh_user_commit_plot(
-            self.query_one("#plot_user_commits", PlotextPlot),
+
+        self.query_one("#plot_user_commits", UserCommitPlot).update(
             list(self.current_branch.user_commits.keys()),
             list(self.current_branch.user_commits.values()),
         )
 
-        refresh_time_series_plot(
-            self.query_one("#time_series_plot", PlotextPlot),
+        self.query_one("#time_series_plot", TimeSeriesPlot).update(
             list(self.current_branch.day_commits.keys()),
             list(self.current_branch.day_commits.values()),
         )
