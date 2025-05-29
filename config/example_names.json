@@ -1,14 +1,28 @@
 {
     "Silas Hage": [
-        "silas.hage@protonmail.com"
+        "silas.hage@protonmail.com",
+        "s.hage@ostfalia.de",
+        "127223312+Elbox30@users.noreply.github.com",
+        "VWXPGPT@vw.vwgroup.com"
     ],
     "Malte Borgmann": [
         "malte.borgmann@protonmail.com",
         "malte@borgmann.tech",
-        "borgmann25@itu.edu.tr"
+        "borgmann25@itu.edu.tr",
+        "142256516+malteborgmann@users.noreply.github.com",
+        "malteborgmann@users.noreply.github.com"
     ],
-    "Jakob Paul Fischer": [
+    "Jakob Fischer": [
         "jako.fischer@ostfalia.de",
-        "117381184+jakobfsr@users.noreply.github.com"
+        "117381184+jakobfsr@users.noreply.github.com",
+        "117381184+jakobfischerostfalia@users.noreply.github.com"
+    ],
+    "Paul Stephan": [
+        "qwertz.cim@gmail.com",
+        "82142746+pste02@users.noreply.github.com",
+        "you@example.com"
+    ],
+    "Florian Segger": [
+        "f.segger@ostfalia.de"
     ]
 }

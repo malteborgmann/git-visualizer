@@ -3,7 +3,7 @@ import os
 
 import pytest
 
-from src.utils.branch_json_utils import classify_branch
+from src.processing.classify_branch import _classify_branch
 
 CONFIG_DATA = {
     "feature": {
@@ -37,5 +37,5 @@ def test_classify_branch():
 
     for branch, expected in test_cases.items():
         expected = expected if expected else None
-        result = classify_branch(branch, CONFIG_DATA)
+        result = _classify_branch(branch, CONFIG_DATA)
         assert result == expected, f"Branch '{branch}' sollte '{expected}' sein, got '{result}'"

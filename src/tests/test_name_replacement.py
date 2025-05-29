@@ -3,7 +3,8 @@ import json
 
 import pytest
 
-from src.utils.naming_json_utils import get_name_by_mail, load_name_config
+from src.utils.naming_json_utils import load_name_config
+from src.processing.map_commit_authors import _get_name_by_mail
 
 # Beispiel-Datenstruktur
 NAME_CONFIG = {
@@ -38,5 +39,5 @@ def test_load_name_config():
     ],
 )
 def test_get_name_by_mail(email, expected_name):
-    result = get_name_by_mail(email, NAME_CONFIG)
+    result = _get_name_by_mail(email, NAME_CONFIG)
     assert result == expected_name
